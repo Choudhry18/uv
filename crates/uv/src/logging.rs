@@ -1,4 +1,5 @@
 use std::fmt;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use anyhow::Context;
@@ -119,6 +120,8 @@ pub(crate) fn setup_logging(
     level: Level,
     durations: impl Layer<Registry> + Send + Sync,
     color: ColorChoice,
+    log_path: &Option<PathBuf>,
+    file_log_level: Level,
 ) -> anyhow::Result<()> {
     let default_directive = match level {
         Level::Default => {
@@ -147,7 +150,26 @@ pub(crate) fn setup_logging(
         ColorChoice::Never => false,
         ColorChoice::Auto => unreachable!("anstream can't return auto as choice"),
     };
-    match level {
+
+    // Map file_log_level to a filter string.
+    let file_filter_str = match file_log_level {
+        Level::Default => "uv=off", // Or choose a default you deem appropriate.
+        Level::Verbose => "uv=debug",
+        Level::ExtraVerbose => "uv=trace",
+    };
+
+    // Build the file filter from our mapping.
+    let file_filter = EnvFilter::try_new(file_filter_str)
+        .unwrap_or_else(|_| EnvFilter::new("uv=debug"));
+
+    let subscriber = tracing_subscriber::registry()
+        .with(durations_layer);
+
+    let mut layers = Vec::new();
+
+
+    // match the level to build the appropriate console layer and box it it as a type-erased traits object so that it can be added to the subscriber.
+    let console_layer =   match level {
         Level::Default | Level::Verbose => {
             // Regardless of the tracing level, show messages without any adornment.
             let format = UvFormat {
@@ -155,33 +177,153 @@ pub(crate) fn setup_logging(
                 display_level: true,
                 show_spans: false,
             };
-
-            tracing_subscriber::registry()
-                .with(durations_layer)
-                .with(
-                    tracing_subscriber::fmt::layer()
-                        .event_format(format)
-                        .with_writer(std::io::stderr)
-                        .with_ansi(ansi)
-                        .with_filter(filter),
-                )
-                .init();
+            tracing_subscriber::fmt::layer()
+                .event_format(format)
+                .with_writer(std::io::stderr)
+                .with_ansi(ansi)
+                .with_filter(filter)
+                .boxed()
         }
         Level::ExtraVerbose => {
             // Regardless of the tracing level, include the uptime and target for each message.
-            tracing_subscriber::registry()
-                .with(durations_layer)
-                .with(
-                    HierarchicalLayer::default()
-                        .with_targets(true)
-                        .with_timer(Uptime::default())
-                        .with_writer(std::io::stderr)
-                        .with_ansi(ansi)
-                        .with_filter(filter),
-                )
-                .init();
+            HierarchicalLayer::default()
+                .with_targets(true)
+                .with_timer(Uptime::default())
+                .with_writer(std::io::stderr)
+                .with_ansi(ansi)
+                .with_filter(filter)
+                .boxed()
         }
-    }
+    };
+
+    // let mut new_path = path.clone();
+    // new_path.set_extension("log");
+    // let log_file = std::fs::OpenOptions::new()
+    // .append(true)
+    // .create(true)
+    // .open(&new_path)
+    // .with_context(|| format!("Failed to open or create log file: {:?}", new_path))?;
+
+    layers.push(console_layer);
+    if let Some(path) = log_path {
+        let file_fomat = UvFormat {
+            display_timestamp: false,
+            display_level: true,
+            show_spans: true,
+        };
+        let mut new_path = path.clone();
+        new_path.set_extension("log");
+        let log_file = std::fs::OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open(&new_path)
+        .with_context(|| format!("Failed to open or create log file: {:?}", new_path))?;
+        match file_log_level {
+            Level::Default | Level::Verbose => {
+                layers.push(tracing_subscriber::fmt::layer()
+                    .event_format(file_fomat)
+                    .with_writer(log_file)
+                    .with_ansi(false)
+                    .with_filter(file_filter).boxed());
+            }
+            Level::ExtraVerbose => {
+                layers.push(
+                HierarchicalLayer::default()
+                    .with_writer(log_file)
+                    .with_ansi(false)
+                    .with_filter(file_filter).boxed());
+            }
+        }
+    } 
+    subscriber.with(layers).init();
+
+    // match (level, log_path) {
+    //     (Level::Default | Level::Verbose, None) => {
+    //         // Regardless of the tracing level, show messages without any adornment.
+    //         let format = UvFormat {
+    //             display_timestamp: false,
+    //             display_level: true,
+    //             show_spans: false,
+    //         };
+
+    //         subscriber
+    //             .with(
+    //                 tracing_subscriber::fmt::layer()
+    //                     .event_format(format)
+    //                     .with_writer(std::io::stderr)
+    //                     .with_ansi(ansi)
+    //                     .with_filter(filter),
+    //             ).init();
+    //     }
+    //     (Level::ExtraVerbose,None) => {
+    //         // Regardless of the tracing level, include the uptime and target for each message.
+    //         subscriber
+    //             .with(
+    //                 HierarchicalLayer::default()
+    //                     .with_targets(true)
+    //                     .with_timer(Uptime::default())
+    //                     .with_writer(std::io::stderr)
+    //                     .with_ansi(ansi),
+    //             )
+    //             .init();
+    //     }
+    //     (Level::Default | Level::Verbose, Some(path)) => {
+    //         // Regardless of the tracing level, show messages without any adornment.
+    //         let format = UvFormat {
+    //             display_timestamp: false,
+    //             display_level: true,
+    //             show_spans: false,
+    //         };
+
+    //         let mut new_path = path.clone();
+    //         new_path.set_extension("log");
+    //         // Open in append mode; if the file doesn't exist, create it.
+    //         let log_file = std::fs::OpenOptions::new()
+    //         .append(true)
+    //         .create(true)
+    //         .open(&new_path)
+    //         .with_context(|| format!("Failed to open or create log file: {:?}", new_path))?;
+
+    //         subscriber
+    //             .with(
+    //                 tracing_subscriber::fmt::layer()
+    //                     .event_format(format)
+    //                     .with_writer(std::io::stderr)
+    //                     .with_ansi(ansi)
+    //                     .with_filter(filter),
+    //             ).with(tracing_subscriber::fmt::layer()
+    //             .event_format(file_fomat)
+    //             .with_writer(log_file)
+    //             .with_ansi(false)
+    //             .with_filter(file_filter))
+    //             .init();
+    //     }
+    //     (Level::ExtraVerbose, Some(path)) => {
+
+    //         let mut new_path = path.clone();
+    //         new_path.set_extension("log");
+    //         // Open in append mode; if the file doesn't exist, create it.
+    //         let log_file = std::fs::OpenOptions::new()
+    //         .append(true)
+    //         .create(true)
+    //         .open(&new_path)
+    //         .with_context(|| format!("Failed to open or create log file: {:?}", new_path))?;
+
+    //         // Regardless of the tracing level, include the uptime and target for each message.
+    //         subscriber
+    //             .with(
+    //                 HierarchicalLayer::default()
+    //                     .with_targets(true)
+    //                     .with_timer(Uptime::default())
+    //                     .with_writer(std::io::stderr)
+    //                     .with_ansi(ansi),
+    //             ).with(HierarchicalLayer::default()
+    //             .with_writer(log_file)
+    //             .with_ansi(false)
+    //             .with_filter(file_filter))
+    //             .init();
+    //     }
+    // }
 
     Ok(())
 }

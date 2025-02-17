@@ -68,6 +68,7 @@ pub(crate) struct GlobalSettings {
     pub(crate) python_downloads: PythonDownloads,
     pub(crate) no_progress: bool,
     pub(crate) installer_metadata: bool,
+    pub(crate) log: Option<PathBuf>,
 }
 
 impl GlobalSettings {
@@ -160,6 +161,7 @@ impl GlobalSettings {
             // with log messages.
             no_progress: args.no_progress || std::env::var_os(EnvVars::RUST_LOG).is_some(),
             installer_metadata: !args.no_installer_metadata,
+            log: args.log.clone(),
         }
     }
 }
