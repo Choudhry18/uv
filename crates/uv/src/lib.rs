@@ -274,7 +274,13 @@ async fn run(mut cli: Cli) -> Result<ExitStatus> {
         duration_layer,
         globals.color,
         &globals.log,
-        logging::Level::Verbose,
+        match globals.log_verbose {
+            0 => logging::LogLevel::Verbose,
+            1 => logging::LogLevel::ExtraVerbose,
+            2 => logging::LogLevel::TraceVerbose,
+            3.. => logging::LogLevel::TraceExtraVerbose,
+        },
+        &globals.log_folder,
     )?;
 
     // Configure the `Printer`, which controls user-facing output in the CLI.
@@ -287,6 +293,9 @@ async fn run(mut cli: Cli) -> Result<ExitStatus> {
     } else {
         Printer::Default
     };
+
+    // let path = std::env::current_dir()?;
+    // debug!("The current directory is {}", path.display());
 
     // Configure the `warn!` macros, which control user-facing warnings in the CLI.
     if globals.quiet {
@@ -1863,6 +1872,26 @@ where
     };
 
     let log_path = cli.top_level.global_args.log.clone();
+    // let project_dir:Cow<'_, Path> = match cli.top_level.global_args.project.as_deref().map(std::path::absolute).transpose() {
+    //     Ok(opt_path) => {
+    //         // Use the resolved project path, or fallback to CWD.
+    //         let base_dir = opt_path
+    //             .map(uv_fs::normalize_path_buf)
+    //             .unwrap_or_else(|| uv_fs::normalize_path_buf(CWD.clone()));
+    //         // If a log path was provided, join it to the base project dir.
+    //         let full_dir = if let Some(ref log) = log_path {
+    //             base_dir.join(log)
+    //         } else {
+    //             base_dir
+    //         };
+    //         Cow::Owned(full_dir)
+    //     }
+    //     Err(e) => {
+    //         // In case of an error, display both the parsing error and the log path.
+    //         eprintln!("Error parsing project directory: {}. Log path: {:?}", e, log_path);
+    //         return ExitStatus::Error.into();
+    //     }
+    // };
 
     // Running out of stack has been an issue for us. We box types and futures in various places
     // to mitigate this, with this being an especially important case.

@@ -76,7 +76,7 @@ mod tool;
 mod venv;
 mod version;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub(crate) enum ExitStatus {
     /// The command succeeded.
     Success,

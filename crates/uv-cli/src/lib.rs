@@ -296,6 +296,13 @@ pub struct GlobalArgs {
     /// Path to a verbose appending log.
     #[arg(global = true, long, value_name = "PATH", help = "Path to a verbose appending log.")]
     pub log: Option<PathBuf>,
+
+    /// Determines the verbosity of the file logs.
+    #[arg(global = true, action = clap::ArgAction::Count, long, short, requires = "log")]
+    pub log_verbose: u8,
+
+    #[arg(global = true, long, value_name = "LOGFOLDER", help = "Path to the log folder during testing.")]
+    pub log_folder: Option<PathBuf>,
 }
 
 #[derive(Debug, Copy, Clone, clap::ValueEnum)]
