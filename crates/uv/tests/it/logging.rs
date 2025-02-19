@@ -1,6 +1,6 @@
 use anyhow::Result;
 use assert_cmd::prelude::*;
-use assert_fs::{prelude::*, NamedTempFile};
+use assert_fs::prelude::*;
 use std::fs;
 use crate::common::{uv_snapshot, TestContext};
 

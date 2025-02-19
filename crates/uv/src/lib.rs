@@ -279,8 +279,7 @@ async fn run(mut cli: Cli) -> Result<ExitStatus> {
             1 => logging::LogLevel::ExtraVerbose,
             2 => logging::LogLevel::TraceVerbose,
             3.. => logging::LogLevel::TraceExtraVerbose,
-        },
-        &globals.log_folder,
+        }
     )?;
 
     // Configure the `Printer`, which controls user-facing output in the CLI.

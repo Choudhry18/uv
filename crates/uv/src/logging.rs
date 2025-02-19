@@ -136,7 +136,6 @@ pub(crate) fn setup_logging(
     color: ColorChoice,
     log_path: &Option<PathBuf>,
     file_log_level: LogLevel,
-    log_folder: &Option<PathBuf>,
 ) -> anyhow::Result<()> {
     let default_directive = match level {
         Level::Default => {
