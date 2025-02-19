@@ -93,6 +93,9 @@ pub struct TestContext {
     pub venv: ChildPath,
     pub workspace_root: PathBuf,
 
+    /// The log file for the test context.
+    pub test_log: ChildPath,
+
     /// The Python version used for the virtual environment, if any.
     pub python_version: Option<PythonVersion>,
 
@@ -105,8 +108,7 @@ pub struct TestContext {
     /// Extra environment variables to apply to all commands.
     extra_env: Vec<(OsString, OsString)>,
 
-    #[allow(dead_code)]
-    _root: tempfile::TempDir,
+    pub proot: PathBuf,
 }
 
 impl TestContext {
@@ -312,6 +314,9 @@ impl TestContext {
         let bin_dir = ChildPath::new(root.path()).child("bin");
         fs_err::create_dir_all(&bin_dir).expect("Failed to create test bin directory");
 
+        let test_log = temp_dir.child("test.log");
+        fs_err::File::create(test_log.path()).expect("Failed to create test log file");
+        
         // When the `git` feature is disabled, enforce that the test suite does not use `git`
         if cfg!(not(feature = "git")) {
             Self::disallow_git_cli(&bin_dir).expect("Failed to setup disallowed `git` command");
@@ -492,11 +497,12 @@ impl TestContext {
             bin_dir,
             venv,
             workspace_root,
+            test_log,
             python_version,
             python_versions,
             filters,
             extra_env: vec![],
-            _root: root,
+            proot: root.into_path(),
         }
     }
 

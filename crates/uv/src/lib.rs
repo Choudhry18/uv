@@ -295,7 +295,7 @@ async fn run(mut cli: Cli) -> Result<ExitStatus> {
     };
 
     // let path = std::env::current_dir()?;
-    // debug!("The current directory is {}", path.display());
+    // println!("The current directory is {}", path.display());
 
     // Configure the `warn!` macros, which control user-facing warnings in the CLI.
     if globals.quiet {

@@ -221,7 +221,6 @@ pub(crate) fn setup_logging(
         };
         let mut new_path = path.clone();
         new_path.set_extension("log");
-
         // Discuss if previous content should be overwritten or appended.
         // If it doesn't exist, create it. 
         let log_file = std::fs::OpenOptions::new()
