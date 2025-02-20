@@ -294,7 +294,7 @@ pub struct GlobalArgs {
     pub project: Option<PathBuf>,
 
     /// Path to a verbose appending log.
-    #[arg(global = true, long, value_name = "PATH", help = "Path to a verbose appending log.")]
+    #[arg(global = true, long, value_name = "PATH", env = EnvVars::UV_LOG, help = "Path to a verbose appending log.")]
     pub log: Option<PathBuf>,
 
     /// Determines the verbosity of the file logs.

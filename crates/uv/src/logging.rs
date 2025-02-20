@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{env, fmt};
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -211,20 +211,24 @@ pub(crate) fn setup_logging(
         }
     };
 
-
+    let original_dir = env::current_dir().expect("Failed to get current directory");
     if let Some(path) = log_path {
         let file_fomat = UvFormat {
             display_timestamp: false,
             display_level: true,
             show_spans: false,
         };
+
+        // If the TEST_DIR environment variable is set, change current directory to that.
+        if let Ok(test_dir) = env::var("TEST_DIR") {
+            env::set_current_dir(&test_dir).expect("Failed to set current directory to TEST_DIR");
+        }
         let mut new_path = path.clone();
         new_path.set_extension("log");
         // Discuss if previous content should be overwritten or appended.
         // If it doesn't exist, create it. 
         let log_file = std::fs::OpenOptions::new()
-        .write(true)
-        .truncate(true)
+        .append(true)
         .create(true)
         .open(&new_path)
         .with_context(|| format!("Failed to open or create log file: {:?}", new_path))?;
@@ -249,7 +253,7 @@ pub(crate) fn setup_logging(
         }
     } 
     subscriber.with(layers).init();
-
+    env::set_current_dir(&original_dir).expect("Failed to set current directory to TEST_DIR");
     Ok(())
 }
 

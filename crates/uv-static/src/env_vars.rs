@@ -614,4 +614,6 @@ impl EnvVars {
 
     /// Enables fetching files stored in Git LFS when installing a package from a Git repository.
     pub const UV_GIT_LFS: &'static str = "UV_GIT_LFS";
+
+    pub const UV_LOG: &'static str = "UV_LOG";
 }

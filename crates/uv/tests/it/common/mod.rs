@@ -9,6 +9,7 @@ use std::process::{Command, ExitStatus, Output};
 use std::str::FromStr;
 use std::{env, io};
 
+use std::panic::Location;
 use assert_cmd::assert::{Assert, OutputAssertExt};
 use assert_fs::assert::PathAssert;
 use assert_fs::fixture::{ChildPath, PathChild, PathCopy, PathCreateDir, SymlinkToFile};
@@ -93,9 +94,6 @@ pub struct TestContext {
     pub venv: ChildPath,
     pub workspace_root: PathBuf,
 
-    /// The log file for the test context.
-    pub test_log: ChildPath,
-
     /// The Python version used for the virtual environment, if any.
     pub python_version: Option<PythonVersion>,
 
@@ -106,9 +104,10 @@ pub struct TestContext {
     filters: Vec<(String, String)>,
 
     /// Extra environment variables to apply to all commands.
-    extra_env: Vec<(OsString, OsString)>,
+    pub extra_env: Vec<(OsString, OsString)>,
 
-    pub proot: PathBuf,
+    #[allow(dead_code)]
+    _root: tempfile::TempDir,
 }
 
 impl TestContext {
@@ -116,8 +115,11 @@ impl TestContext {
     ///
     /// See [`TestContext::new_with_versions`] if multiple versions are needed or
     /// if creation of the virtual environment should be deferred.
+    #[track_caller]
     pub fn new(python_version: &str) -> Self {
-        let new = Self::new_with_versions(&[python_version]);
+        let mut new = Self::new_with_versions(&[python_version]);
+        let log_env_value = Location::caller().to_string().replace("/", "_");
+        new.extra_env.push((EnvVars::UV_LOG.into(), log_env_value.into()));
         new.create_venv();
         new
     }
@@ -314,9 +316,6 @@ impl TestContext {
         let bin_dir = ChildPath::new(root.path()).child("bin");
         fs_err::create_dir_all(&bin_dir).expect("Failed to create test bin directory");
 
-        let test_log = temp_dir.child("test.log");
-        fs_err::File::create(test_log.path()).expect("Failed to create test log file");
-        
         // When the `git` feature is disabled, enforce that the test suite does not use `git`
         if cfg!(not(feature = "git")) {
             Self::disallow_git_cli(&bin_dir).expect("Failed to setup disallowed `git` command");
@@ -497,12 +496,11 @@ impl TestContext {
             bin_dir,
             venv,
             workspace_root,
-            test_log,
             python_version,
             python_versions,
             filters,
             extra_env: vec![],
-            proot: root.into_path(),
+            _root: root,
         }
     }
 

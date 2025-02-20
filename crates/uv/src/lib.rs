@@ -282,6 +282,8 @@ async fn run(mut cli: Cli) -> Result<ExitStatus> {
         }
     )?;
 
+
+
     // Configure the `Printer`, which controls user-facing output in the CLI.
     let printer = if globals.quiet {
         Printer::Quiet
@@ -1940,13 +1942,13 @@ where
 
         match result {
             Ok(code) => {
-                if let (ExitStatus::Error | ExitStatus::Failure) = code {
-                    if let Some(log_path) = log_path {
-                        let mut log_file_path = log_path.clone();
-                        log_file_path.set_extension("log");
-                        eprintln!("See {} for detailed logs", log_file_path.display());
-                    }
-                }
+                // if let (ExitStatus::Error | ExitStatus::Failure) = code {
+                //     if let Some(log_path) = log_path {
+                //         let mut log_file_path = log_path.clone();
+                //         log_file_path.set_extension("log");
+                //         eprintln!("See {} for detailed logs", log_file_path.display());
+                //     }
+                // }
                 code.into()
             }
             Err(err) => {
@@ -1959,11 +1961,11 @@ where
                 for cause in causes {
                     eprintln!("  {}: {}", "Caused by".red().bold(), cause.to_string().trim());
                 }
-                if let Some(log_path) = log_path {
-                    let mut log_file_path = log_path.clone();
-                    log_file_path.set_extension("log");
-                    eprintln!("See {} for detailed logs", log_file_path.display());
-                }
+                // if let Some(log_path) = log_path {
+                //     let mut log_file_path = log_path.clone();
+                //     log_file_path.set_extension("log");
+                //     eprintln!("See {} for detailed logs", log_file_path.display());
+                // }
                 ExitStatus::Error.into()
             }
         }
