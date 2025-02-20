@@ -126,7 +126,7 @@ fn run_with_python_version() -> Result<()> {
         .arg("main.py")
         .env_remove(EnvVars::VIRTUAL_ENV);
 
-    uv_snapshot!(context.filters(), command_with_args, @r###"
+    uv_snapshot!(context.filters(), command_with_args, @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -134,7 +134,8 @@ fn run_with_python_version() -> Result<()> {
     ----- stderr -----
     Using CPython 3.8.[X] interpreter at: [PYTHON-3.8]
     error: The requested interpreter resolved to Python 3.8.[X], which is incompatible with the project's Python requirement: `>=3.11, <4`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -219,7 +220,7 @@ fn run_no_args() -> Result<()> {
 
     // Run without specifying any argunments.
     #[cfg(not(windows))]
-    uv_snapshot!(context.filters(), context.run(), @r###"
+    uv_snapshot!(context.filters(), context.run(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -238,7 +239,8 @@ fn run_no_args() -> Result<()> {
     Prepared 1 package in [TIME]
     Installed 1 package in [TIME]
      + foo==1.0.0 (from file://[TEMP_DIR]/)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     #[cfg(windows)]
     uv_snapshot!(context.filters(), context.run(), @r###"
@@ -417,7 +419,7 @@ fn run_pep723_script() -> Result<()> {
     })?;
 
     // Running a script with `--group` should warn.
-    uv_snapshot!(context.filters(), context.run().arg("--group").arg("foo").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--group").arg("foo").arg("main.py"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -425,7 +427,8 @@ fn run_pep723_script() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving script dependencies:
       ╰─▶ Because there are no versions of add and you require add, we can conclude that your requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // If the script can't be resolved, we should reference the script.
     let test_script = context.temp_dir.child("main.py");
@@ -439,7 +442,7 @@ fn run_pep723_script() -> Result<()> {
        "#
     })?;
 
-    uv_snapshot!(context.filters(), context.run().arg("--no-project").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--no-project").arg("main.py"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -447,7 +450,8 @@ fn run_pep723_script() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving script dependencies:
       ╰─▶ Because there are no versions of add and you require add, we can conclude that your requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // If the script contains an unclosed PEP 723 tag, we should error.
     let test_script = context.temp_dir.child("main.py");
@@ -464,14 +468,15 @@ fn run_pep723_script() -> Result<()> {
        "#
     })?;
 
-    uv_snapshot!(context.filters(), context.run().arg("--no-project").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--no-project").arg("main.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: An opening tag (`# /// script`) was found without a closing tag (`# ///`). Ensure that every line between the opening and closing tags (including empty lines) starts with a leading `#`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -878,7 +883,7 @@ fn run_pep723_script_lock() -> Result<()> {
     })?;
 
     // Re-running the script with `--locked` should error.
-    uv_snapshot!(context.filters(), context.run().arg("--locked").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--locked").arg("main.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -886,7 +891,8 @@ fn run_pep723_script_lock() -> Result<()> {
     ----- stderr -----
     Resolved 3 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // Re-running the script with `--frozen` should also error, but at runtime.
     uv_snapshot!(context.filters(), context.run().arg("--frozen").arg("main.py"), @r###"
@@ -1176,7 +1182,7 @@ fn run_with() -> Result<()> {
     "###);
 
     // If the dependencies can't be resolved, we should reference `--with`.
-    uv_snapshot!(context.filters(), context.run().arg("--with").arg("add").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--with").arg("add").arg("main.py"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1186,7 +1192,8 @@ fn run_with() -> Result<()> {
     Audited 2 packages in [TIME]
       × No solution found when resolving `--with` dependencies:
       ╰─▶ Because there are no versions of add and you require add, we can conclude that your requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -1482,7 +1489,7 @@ fn run_with_editable() -> Result<()> {
     "###);
 
     // If invalid, we should reference `--with-editable`.
-    uv_snapshot!(context.filters(), context.run().arg("--with-editable").arg("./foo").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--with-editable").arg("./foo").arg("main.py"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1492,7 +1499,8 @@ fn run_with_editable() -> Result<()> {
     Audited 3 packages in [TIME]
       × Failed to resolve `--with` requirement
       ╰─▶ Distribution not found at: file://[TEMP_DIR]/foo
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -1710,14 +1718,15 @@ fn run_locked() -> Result<()> {
     )?;
 
     // Running with `--locked` should error, if no lockfile is present.
-    uv_snapshot!(context.filters(), context.run().arg("--locked").arg("--").arg("python").arg("--version"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--locked").arg("--").arg("python").arg("--version"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Unable to find lockfile at `uv.lock`. To create a lockfile, run `uv lock` or `uv sync`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // Lock the initial requirements.
     context.lock().assert().success();
@@ -1796,7 +1805,7 @@ fn run_locked() -> Result<()> {
     )?;
 
     // Running with `--locked` should error.
-    uv_snapshot!(context.filters(), context.run().arg("--locked").arg("--").arg("python").arg("--version"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--locked").arg("--").arg("python").arg("--version"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -1804,7 +1813,8 @@ fn run_locked() -> Result<()> {
     ----- stderr -----
     Resolved 2 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     let updated = context.read("uv.lock");
 
@@ -1873,14 +1883,15 @@ fn run_frozen() -> Result<()> {
     )?;
 
     // Running with `--frozen` should error, if no lockfile is present.
-    uv_snapshot!(context.filters(), context.run().arg("--frozen").arg("--").arg("python").arg("--version"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--frozen").arg("--").arg("python").arg("--version"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Unable to find lockfile at `uv.lock`. To create a lockfile, run `uv lock` or `uv sync`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     context.lock().assert().success();
 
@@ -2157,28 +2168,30 @@ fn run_requirements_txt() -> Result<()> {
         .arg("-")
         // The script to run
         .arg("-")
-        .stdin(std::fs::File::open(&requirements_txt)?), @r###"
+        .stdin(std::fs::File::open(&requirements_txt)?), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Cannot read both requirements file and script from stdin
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.run()
         .arg("--with-requirements")
         .arg("-")
         .arg("--script")
         .arg("-")
-        .stdin(std::fs::File::open(&requirements_txt)?), @r###"
+        .stdin(std::fs::File::open(&requirements_txt)?), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Cannot read both requirements file and script from stdin
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -2411,7 +2424,7 @@ fn run_from_directory() -> Result<()> {
     "###);
 
     fs_err::remove_dir_all(context.temp_dir.join("project").join(".venv"))?;
-    uv_snapshot!(filters.clone(), context.run().arg("--directory").arg("project").arg("./project/main.py"), @r###"
+    uv_snapshot!(filters.clone(), context.run().arg("--directory").arg("project").arg("./project/main.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2425,7 +2438,8 @@ fn run_from_directory() -> Result<()> {
      + foo==1.0.0 (from file://[TEMP_DIR]/project)
     error: Failed to spawn: `./project/main.py`
       Caused by: No such file or directory (os error 2)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // Even if we write a `.python-version` file in the current directory, we should prefer the
     // one in the project directory in both cases.
@@ -2846,14 +2860,15 @@ fn run_module() {
 fn run_module_stdin() {
     let context = TestContext::new("3.12");
 
-    uv_snapshot!(context.filters(), context.run().arg("-m").arg("-"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("-m").arg("-"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Cannot run a Python module from stdin
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 }
 
 /// When the `pyproject.toml` file is invalid.
@@ -2875,14 +2890,15 @@ fn run_project_toml_error() -> Result<()> {
     init.touch()?;
 
     // `run` should fail
-    uv_snapshot!(context.filters(), context.run().arg("python").arg("-c").arg("import sys; print(sys.executable)"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("python").arg("-c").arg("import sys; print(sys.executable)"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No `project` table found in: `[TEMP_DIR]/pyproject.toml`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // `run --no-project` should not
     uv_snapshot!(context.filters(), context.run().arg("--no-project").arg("python").arg("-c").arg("import sys; print(sys.executable)"), @r###"
@@ -2928,7 +2944,7 @@ fn run_isolated_incompatible_python() -> Result<()> {
     })?;
 
     // We should reject Python 3.8...
-    uv_snapshot!(context.filters(), context.run().arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("main.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2936,17 +2952,19 @@ fn run_isolated_incompatible_python() -> Result<()> {
     ----- stderr -----
     Using CPython 3.8.[X] interpreter at: [PYTHON-3.8]
     error: The Python request from `.python-version` resolved to Python 3.8.[X], which is incompatible with the project's Python requirement: `>=3.12`. Use `uv python pin` to update the `.python-version` file to a compatible version.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     // ...even if `--isolated` is provided.
-    uv_snapshot!(context.filters(), context.run().arg("--isolated").arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--isolated").arg("main.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: The Python request from `.python-version` resolved to Python 3.8.[X], which is incompatible with the project's Python requirement: `>=3.12`. Use `uv python pin` to update the `.python-version` file to a compatible version.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -3092,7 +3110,7 @@ fn run_invalid_project_table() -> Result<()> {
        "#
     })?;
 
-    uv_snapshot!(context.filters(), context.run().arg("main.py"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("main.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -3104,7 +3122,8 @@ fn run_invalid_project_table() -> Result<()> {
     1 | [project.urls]
       |  ^^^^^^^
     `pyproject.toml` is using the `[project]` table, but the required `project.name` field is not set
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -3136,7 +3155,7 @@ fn run_script_without_build_system() -> Result<()> {
 
     // TODO(lucab): this should match `entry` and warn
     // <https://github.com/astral-sh/uv/issues/7428>
-    uv_snapshot!(context.filters(), context.run().arg("entry"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("entry"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -3146,7 +3165,8 @@ fn run_script_without_build_system() -> Result<()> {
     Audited in [TIME]
     error: Failed to spawn: `entry`
       Caused by: No such file or directory (os error 2)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -3236,14 +3256,15 @@ fn run_script_explicit_directory() -> Result<()> {
 
     fs_err::create_dir(context.temp_dir.child("script"))?;
 
-    uv_snapshot!(context.filters(), context.run().arg("--script").arg("script"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("--script").arg("script"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: failed to read from file `script`: Is a directory (os error 21)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -3779,14 +3800,15 @@ fn run_with_multiple_env_files() -> Result<()> {
     ----- stderr -----
     "###);
 
-    uv_snapshot!(context.filters(), context.run().arg("test.py").env(EnvVars::UV_ENV_FILE, ".env1 .env2"), @r###"
+    uv_snapshot!(context.filters(), context.run().arg("test.py").env(EnvVars::UV_ENV_FILE, ".env1 .env2"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No environment file found at: `.env1 .env2`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -3862,14 +3884,15 @@ fn run_with_not_existing_env_file() -> Result<()> {
         "error: Failed to read environment file `.env.development`: [ERR]",
     ));
 
-    uv_snapshot!(filters, context.run().arg("--env-file").arg(".env.development").arg("test.py"), @r###"
+    uv_snapshot!(filters, context.run().arg("--env-file").arg(".env.development").arg("test.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No environment file found at: `.env.development`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/run.log for detailed logs
+    ");
 
     Ok(())
 }

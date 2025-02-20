@@ -67,7 +67,9 @@ fn help() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config
@@ -149,7 +151,9 @@ fn help_flag() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=help.rs:91:19]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config
@@ -230,7 +234,9 @@ fn help_short_flag() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=help.rs:174:19]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config
@@ -427,6 +433,11 @@ fn help_subcommand() {
 
           --log <PATH>
               Path to a verbose appending log.
+              
+              [env: UV_LOG=]
+
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
 
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration.
@@ -674,6 +685,11 @@ fn help_subsubcommand() {
 
           --log <PATH>
               Path to a verbose appending log.
+              
+              [env: UV_LOG=]
+
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
 
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration.
@@ -755,7 +771,9 @@ fn help_flag_subcommand() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=help.rs:723:19]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config
@@ -830,7 +848,9 @@ fn help_flag_subsubcommand() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=help.rs:794:19]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config
@@ -989,7 +1009,9 @@ fn help_with_global_option() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config
@@ -1107,7 +1129,9 @@ fn help_with_no_pager() {
           --project <PROJECT>
               Run the command within the given project directory
           --log <PATH>
-              Path to a verbose appending log.
+              Path to a verbose appending log. [env: UV_LOG=]
+      -l, --log-verbose...
+              Determines the verbosity of the file logs
           --config-file <CONFIG_FILE>
               The path to a `uv.toml` file to use for configuration [env: UV_CONFIG_FILE=]
           --no-config

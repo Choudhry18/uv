@@ -1046,7 +1046,7 @@ fn lock_wheel_url() -> Result<()> {
     "###);
 
     // Re-run with `--offline`. This should fail: we need network access to resolve mutable metadata.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked").arg("--offline").arg("--no-cache"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked").arg("--offline").arg("--no-cache"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -1054,7 +1054,8 @@ fn lock_wheel_url() -> Result<()> {
     ----- stderr -----
     error: Failed to generate package metadata for `anyio==4.3.0 @ direct+https://files.pythonhosted.org/packages/14/fd/2f20c40b45e4fb4324834aea24bd4afdf1143390242c0b33774da0e2e34f/anyio-4.3.0-py3-none-any.whl`
       Caused by: Network connectivity is disabled, but the requested data wasn't found in the cache for: `https://files.pythonhosted.org/packages/14/fd/2f20c40b45e4fb4324834aea24bd4afdf1143390242c0b33774da0e2e34f/anyio-4.3.0-py3-none-any.whl`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Install from the lockfile.
     uv_snapshot!(context.filters(), context.sync().arg("--frozen"), @r###"
@@ -3489,7 +3490,7 @@ fn lock_requires_python() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -3512,7 +3513,8 @@ fn lock_requires_python() -> Result<()> {
           hint: Pre-releases are available for `pygls` in the requested range (e.g., 2.0.0a2), but pre-releases weren't enabled (try: `--prerelease=allow`)
 
           hint: The `requires-python` value (>=3.7) includes Python versions that are not supported by your dependencies (e.g., pygls>=1.1.0,<=1.2.1 only supports >=3.7.9, <4). Consider using a more restrictive `requires-python` value (like >=3.7.9, <4).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Require >=3.7, and allow locking to a version of `pygls` that is compatible (==1.0.1).
     pyproject_toml.write_str(
@@ -4135,14 +4137,15 @@ fn lock_requires_python() -> Result<()> {
 
     // Install from the lockfile.
     // Note we need to disable Python fetches or we'll just download 3.12
-    uv_snapshot!(context38.filters(), context38.sync().arg("--frozen").arg("--no-python-downloads"), @r###"
+    uv_snapshot!(context38.filters(), context38.sync().arg("--frozen").arg("--no-python-downloads"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No interpreter found for Python >=3.12 in [PYTHON SOURCES]
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -5067,7 +5070,7 @@ fn lock_requires_python_disjoint() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -5076,7 +5079,8 @@ fn lock_requires_python_disjoint() -> Result<()> {
     error: The workspace contains conflicting Python requirements:
     - `child`: `==3.10`
     - `project`: `>=3.12`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -6390,7 +6394,7 @@ fn lock_invalid_hash() -> Result<()> {
         "#)?;
 
     // Re-run with `--locked`.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -6398,10 +6402,11 @@ fn lock_invalid_hash() -> Result<()> {
     ----- stderr -----
     Resolved 4 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Install from the lockfile.
-    uv_snapshot!(context.filters(), context.sync().arg("--frozen"), @r###"
+    uv_snapshot!(context.filters(), context.sync().arg("--frozen"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6417,7 +6422,8 @@ fn lock_invalid_hash() -> Result<()> {
           Computed:
             sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f
       help: `idna` (v3.6) was included because `project` (v0.1.0) depends on `anyio` (v3.7.0) which depends on `idna`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -6616,7 +6622,7 @@ fn lock_requires_python_no_wheels() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6626,7 +6632,8 @@ fn lock_requires_python_no_wheels() -> Result<()> {
       ╰─▶ Because dearpygui==1.9.1 has no wheels with a matching Python version tag (e.g., `cp312`) and your project depends on dearpygui==1.9.1, we can conclude that your project's requirements are unsatisfiable.
 
           hint: Wheels are available for `dearpygui` (v1.9.1) with the following Python ABI tags: `cp37m`, `cp38`, `cp39`, `cp310`, `cp311`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -6942,14 +6949,15 @@ fn lock_exclusion() -> Result<()> {
     });
 
     // Re-run with `--locked`.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Unable to find lockfile at `uv.lock`. To create a lockfile, run `uv lock` or `uv sync`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -7040,7 +7048,7 @@ fn lock_relative_lock_deserialization() -> Result<()> {
     "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().current_dir(&child), @r###"
+    uv_snapshot!(context.filters(), context.lock().current_dir(&child), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -7050,7 +7058,8 @@ fn lock_relative_lock_deserialization() -> Result<()> {
     error: Failed to generate package metadata for `child==0.1.0 @ editable+.`
       Caused by: Failed to parse entry: `member`
       Caused by: `member` references a workspace in `tool.uv.sources` (e.g., `member = { workspace = true }`), but is not a workspace member
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -7095,7 +7104,7 @@ fn lock_non_workspace_source() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().current_dir(&child), @r###"
+    uv_snapshot!(context.filters(), context.lock().current_dir(&child), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -7104,7 +7113,8 @@ fn lock_non_workspace_source() -> Result<()> {
       × Failed to build `project @ file://[TEMP_DIR]/`
       ├─▶ Failed to parse entry: `child`
       ╰─▶ `child` is included as a workspace member, but references a path in `tool.uv.sources`. Workspace members must be declared as workspace sources (e.g., `child = { workspace = true }`).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -7146,7 +7156,7 @@ fn lock_no_workspace_source() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().current_dir(&child), @r###"
+    uv_snapshot!(context.filters(), context.lock().current_dir(&child), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -7155,7 +7165,8 @@ fn lock_no_workspace_source() -> Result<()> {
       × Failed to build `project @ file://[TEMP_DIR]/`
       ├─▶ Failed to parse entry: `child`
       ╰─▶ `child` is included as a workspace member, but is missing an entry in `tool.uv.sources` (e.g., `child = { workspace = true }`)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -7252,14 +7263,15 @@ fn lock_peer_member() -> Result<()> {
     });
 
     // Re-run with `--locked`.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No `pyproject.toml` found in current directory or any parent directory
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -7313,7 +7325,7 @@ fn lock_index_workspace_member() -> Result<()> {
     )?;
 
     // Locking without the necessary credentials should fail.
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -7322,7 +7334,8 @@ fn lock_index_workspace_member() -> Result<()> {
       × No solution found when resolving dependencies:
       ╰─▶ Because iniconfig was not found in the package registry and child depends on iniconfig>=2, we can conclude that child's requirements are unsatisfiable.
           And because your workspace requires child, we can conclude that your workspace's requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.lock()
         .env("UV_INDEX_MY_INDEX_USERNAME", "public")
@@ -7566,14 +7579,15 @@ fn lock_dev_transitive() -> Result<()> {
     });
 
     // Re-run with `--locked`.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No `pyproject.toml` found in current directory or any parent directory
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -7663,7 +7677,7 @@ fn lock_redact_https() -> Result<()> {
 
     // Installing from the lockfile should fail without credentials. Omit the root, so that we fail
     // when installing `iniconfig`, rather than when building `foo`.
-    uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--index-url").arg("https://pypi-proxy.fly.dev/basic-auth/simple").arg("--no-install-project"), @r###"
+    uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--index-url").arg("https://pypi-proxy.fly.dev/basic-auth/simple").arg("--no-install-project"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -7673,10 +7687,11 @@ fn lock_redact_https() -> Result<()> {
       ├─▶ Failed to fetch: `https://pypi-proxy.fly.dev/basic-auth/files/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl`
       ╰─▶ HTTP status client error (401 Unauthorized) for url (https://pypi-proxy.fly.dev/basic-auth/files/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl)
       help: `iniconfig` (v2.0.0) was included because `foo` (v0.1.0) depends on `iniconfig`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Installing from the lockfile should fail without an index.
-    uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--no-install-project"), @r###"
+    uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--no-install-project"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -7686,7 +7701,8 @@ fn lock_redact_https() -> Result<()> {
       ├─▶ Failed to fetch: `https://pypi-proxy.fly.dev/basic-auth/files/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl`
       ╰─▶ HTTP status client error (401 Unauthorized) for url (https://pypi-proxy.fly.dev/basic-auth/files/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl)
       help: `iniconfig` (v2.0.0) was included because `foo` (v0.1.0) depends on `iniconfig`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Installing from the lockfile should succeed when credentials are included on the command-line.
     uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--index-url").arg("https://public:heron@pypi-proxy.fly.dev/basic-auth/simple"), @r###"
@@ -7714,7 +7730,7 @@ fn lock_redact_https() -> Result<()> {
     "###);
 
     // Installing without credentials will fail without a cache.
-    uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--reinstall").arg("--no-cache").arg("--no-install-project"), @r###"
+    uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--reinstall").arg("--no-cache").arg("--no-install-project"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -7724,7 +7740,8 @@ fn lock_redact_https() -> Result<()> {
       ├─▶ Failed to fetch: `https://pypi-proxy.fly.dev/basic-auth/files/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl`
       ╰─▶ HTTP status client error (401 Unauthorized) for url (https://pypi-proxy.fly.dev/basic-auth/files/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl)
       help: `iniconfig` (v2.0.0) was included because `foo` (v0.1.0) depends on `iniconfig`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Installing with credentials from with `UV_INDEX_URL` should succeed.
     uv_snapshot!(context.filters(), context.sync().arg("--frozen").arg("--reinstall").arg("--no-cache").env(EnvVars::UV_INDEX_URL, "https://public:heron@pypi-proxy.fly.dev/basic-auth/simple"), @r###"
@@ -8247,7 +8264,7 @@ fn lock_env_credentials() -> Result<()> {
     )?;
 
     // Without credentials, the resolution should fail.
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -8257,7 +8274,8 @@ fn lock_env_credentials() -> Result<()> {
       ╰─▶ Because iniconfig was not found in the package registry and your project depends on iniconfig, we can conclude that your project's requirements are unsatisfiable.
 
           hint: An index URL (https://pypi-proxy.fly.dev/basic-auth/simple) could not be queried due to a lack of valid authentication credentials (401 Unauthorized).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Provide credentials via environment variables.
     uv_snapshot!(context.filters(), context.lock()
@@ -10925,7 +10943,7 @@ fn unconditional_overlapping_marker_disjoint_version_constraints() -> Result<()>
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -10933,7 +10951,8 @@ fn unconditional_overlapping_marker_disjoint_version_constraints() -> Result<()>
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because only datasets<2.19 is available and your project depends on datasets>=2.19, we can conclude that your project's requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -11203,7 +11222,7 @@ fn lock_remove_member() -> Result<()> {
     )?;
 
     // Re-run with `--locked`. This should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -11211,7 +11230,8 @@ fn lock_remove_member() -> Result<()> {
     ----- stderr -----
     Resolved 1 package in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run without `--locked`.
     uv_snapshot!(context.filters(), context.lock(), @r###"
@@ -11346,7 +11366,7 @@ fn lock_add_member() -> Result<()> {
     )?;
 
     // Re-run with `--locked`. This should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -11354,10 +11374,11 @@ fn lock_add_member() -> Result<()> {
     ----- stderr -----
     Resolved 5 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run with `--offline`. This should also fail, during the resolve phase.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked").arg("--offline").arg("--no-cache"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked").arg("--offline").arg("--no-cache"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -11368,7 +11389,8 @@ fn lock_add_member() -> Result<()> {
           And because your workspace requires leaf, we can conclude that your workspace's requirements are unsatisfiable.
 
           hint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run without `--locked`.
     uv_snapshot!(context.filters(), context.lock(), @r###"
@@ -11581,7 +11603,7 @@ fn lock_redundant_add_member() -> Result<()> {
 
     // Re-run with `--locked`. This will fail, though in theory it could succeed, since the current
     // _resolution_ satisfies the requirements, even if the inputs are not identical
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -11589,7 +11611,8 @@ fn lock_redundant_add_member() -> Result<()> {
     ----- stderr -----
     Resolved 4 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run without `--locked`.
     uv_snapshot!(context.filters(), context.lock(), @r###"
@@ -11777,7 +11800,7 @@ fn lock_new_constraints() -> Result<()> {
     )?;
 
     // Re-run with `--locked`. This should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -11785,7 +11808,8 @@ fn lock_new_constraints() -> Result<()> {
     ----- stderr -----
     Resolved 4 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run without `--locked`.
     uv_snapshot!(context.filters(), context.lock(), @r###"
@@ -11984,7 +12008,7 @@ fn lock_remove_member_non_project() -> Result<()> {
     )?;
 
     // Re-run with `--locked`. This should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -11993,7 +12017,8 @@ fn lock_remove_member_non_project() -> Result<()> {
     warning: No `requires-python` value found in the workspace. Defaulting to `>=3.12`.
     Resolved in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run without `--locked`.
     uv_snapshot!(context.filters(), context.lock(), @r###"
@@ -12114,7 +12139,7 @@ fn lock_rename_project() -> Result<()> {
     )?;
 
     // Re-run with `--locked`. This should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -12122,7 +12147,8 @@ fn lock_rename_project() -> Result<()> {
     ----- stderr -----
     Resolved 2 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Re-run without `--locked`.
     uv_snapshot!(context.filters(), context.lock(), @r###"
@@ -13104,7 +13130,7 @@ fn lock_constrained_environment() -> Result<()> {
     )?;
 
     // Re-run with `--locked`. This should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -13112,7 +13138,8 @@ fn lock_constrained_environment() -> Result<()> {
     ----- stderr -----
     Resolved 8 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.lock(), @r###"
     success: true
@@ -13415,7 +13442,7 @@ fn lock_overlapping_environment() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -13424,7 +13451,8 @@ fn lock_overlapping_environment() -> Result<()> {
     error: Supported environments must be disjoint, but the following markers overlap: `sys_platform != 'win32'` and `python_full_version >= '3.11'`.
 
     hint: replace `python_full_version >= '3.11'` with `python_full_version >= '3.11' and sys_platform == 'win32'`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -14418,7 +14446,7 @@ fn lock_invalid_index() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -14437,7 +14465,8 @@ fn lock_invalid_index() -> Result<()> {
     9 |         iniconfig = { index = "internal proxy" }
       |                               ^^^^^^^^^^^^^^^^
     Index names may only contain letters, digits, hyphens, underscores, and periods, but found unsupported character (` `) in: `internal proxy`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -14633,7 +14662,7 @@ fn lock_explicit_default_index() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().arg("--verbose"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--verbose"), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -14665,7 +14694,8 @@ fn lock_explicit_default_index() -> Result<()> {
       ╰─▶ Because anyio was not found in the provided package locations and your project depends on anyio, we can conclude that your project's requirements are unsatisfiable.
 
           hint: Packages were unavailable because index lookups were disabled and no additional package locations were provided (try: `--find-links <uri>`)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     let lock = fs_err::read_to_string(context.temp_dir.join("uv.lock")).unwrap();
 
@@ -14863,7 +14893,7 @@ fn lock_default_index() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -14871,7 +14901,8 @@ fn lock_default_index() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because iniconfig was not found in the package registry and your project depends on iniconfig, we can conclude that your project's requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     let lock = fs_err::read_to_string(context.temp_dir.join("uv.lock")).unwrap();
 
@@ -14931,7 +14962,7 @@ fn lock_named_index_cli() -> Result<()> {
     )?;
 
     // The package references a non-existent index.
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -14940,7 +14971,8 @@ fn lock_named_index_cli() -> Result<()> {
       × Failed to build `project @ file://[TEMP_DIR]/`
       ├─▶ Failed to parse entry: `jinja2`
       ╰─▶ Package `jinja2` references an undeclared index: `pytorch`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // But it's fine if it comes from the CLI.
     uv_snapshot!(context.filters(), context.lock().arg("--index").arg("pytorch=https://astral-sh.github.io/pytorch-mirror/whl/cu121"), @r###"
@@ -15859,14 +15891,15 @@ fn lock_conflicting_environment() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Environment markers `python_full_version < '3.11'` don't overlap with Python requirement `>=3.12`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -16884,7 +16917,7 @@ fn lock_request_requires_python() -> Result<()> {
     )?;
 
     // Request a version that conflicts with `--requires-python`.
-    uv_snapshot!(context.filters(), context.lock().arg("--python").arg("3.12"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--python").arg("3.12"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -16892,13 +16925,14 @@ fn lock_request_requires_python() -> Result<()> {
     ----- stderr -----
     Using CPython 3.12.[X] interpreter at: [PYTHON-3.12]
     error: The requested interpreter resolved to Python 3.12.[X], which is incompatible with the project's Python requirement: `>=3.8, <=3.10`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Add a `.python-version` file that conflicts.
     let python_version = context.temp_dir.child(".python-version");
     python_version.write_str("3.12")?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -16906,7 +16940,8 @@ fn lock_request_requires_python() -> Result<()> {
     ----- stderr -----
     Using CPython 3.12.[X] interpreter at: [PYTHON-3.12]
     error: The Python request from `.python-version` resolved to Python 3.12.[X], which is incompatible with the project's Python requirement: `>=3.8, <=3.10`. Use `uv python pin` to update the `.python-version` file to a compatible version.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -16929,7 +16964,7 @@ fn lock_duplicate_sources() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -16948,8 +16983,8 @@ fn lock_duplicate_sources() -> Result<()> {
     9 |         python-multipart = { url = "https://files.pythonhosted.org/packages/c0/3e/9fbfd74e7f5b54f653f7ca99d44ceb56e718846920162165061c4c22b71a/python_multipart-0.0.8-py3-none-any.whl" }
       |         ^
     duplicate key `python-multipart` in table `tool.uv.sources`
-
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     let pyproject_toml = context.temp_dir.child("pyproject.toml");
     pyproject_toml.write_str(
@@ -16965,7 +17000,7 @@ fn lock_duplicate_sources() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -16977,8 +17012,8 @@ fn lock_duplicate_sources() -> Result<()> {
     7 |         [tool.uv.sources]
       |         ^^^^^^^^^^^^^^^^^
     duplicate sources for package `python-multipart`
-
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -17009,7 +17044,7 @@ fn lock_invalid_project_table() -> Result<()> {
         ",
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().current_dir(context.temp_dir.join("a")), @r###"
+    uv_snapshot!(context.filters(), context.lock().current_dir(context.temp_dir.join("a")), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -17023,7 +17058,9 @@ fn lock_invalid_project_table() -> Result<()> {
           2 |         [project.urls]
             |          ^^^^^^^
           `pyproject.toml` is using the `[project]` table, but the required `project.name` field is not set
-    "###);
+
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -17042,7 +17079,7 @@ fn lock_missing_name() -> Result<()> {
         "#,
     })?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -17054,7 +17091,8 @@ fn lock_missing_name() -> Result<()> {
     1 | [project]
       | ^^^^^^^^^
     `pyproject.toml` is using the `[project]` table, but the required `project.name` field is not set
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -17073,7 +17111,7 @@ fn lock_missing_version() -> Result<()> {
         "#,
     })?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -17085,7 +17123,8 @@ fn lock_missing_version() -> Result<()> {
     1 | [project]
       | ^^^^^^^^^
     `pyproject.toml` is using the `[project]` table, but the required `project.version` field is neither set nor present in the `project.dynamic` list
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -17136,14 +17175,15 @@ fn lock_unsupported_version() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().arg("--frozen"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--frozen"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: The lockfile at `uv.lock` uses an unsupported schema version (v2, but only v1 is supported). Downgrade to a compatible uv version, or remove the `uv.lock` prior to running `uv lock` or `uv sync`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     // Invalid schema (`iniconfig` is referenced, but missing), invalid version.
     context.temp_dir.child("uv.lock").write_str(
@@ -17167,7 +17207,7 @@ fn lock_unsupported_version() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().arg("--frozen"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--frozen"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -17175,7 +17215,8 @@ fn lock_unsupported_version() -> Result<()> {
     ----- stderr -----
     error: Failed to parse `uv.lock`, which uses an unsupported schema version (v2, but only v1 is supported). Downgrade to a compatible uv version, or remove the `uv.lock` prior to running `uv lock` or `uv sync`.
       Caused by: Dependency `iniconfig` has missing `version` field but has more than one matching package
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -17619,7 +17660,7 @@ fn lock_multiple_sources_conflict() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -17633,7 +17674,8 @@ fn lock_multiple_sources_conflict() -> Result<()> {
     Source markers must be disjoint, but the following markers overlap: `python_full_version == '3.12.*' and sys_platform == 'win32'` and `sys_platform == 'win32'`.
 
     hint: replace `sys_platform == 'win32'` with `python_full_version != '3.12.*' and sys_platform == 'win32'`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -17659,7 +17701,7 @@ fn lock_multiple_sources_no_marker() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -17671,7 +17713,8 @@ fn lock_multiple_sources_no_marker() -> Result<()> {
     9 |         iniconfig = [
       |                     ^
     When multiple sources are provided, each source must include a platform marker (e.g., `marker = "sys_platform == 'linux'"`)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -17970,7 +18013,7 @@ fn lock_multiple_sources_index_non_total() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -17978,7 +18021,8 @@ fn lock_multiple_sources_index_non_total() -> Result<()> {
     ----- stderr -----
     Resolved 4 packages in [TIME]
     error: Found duplicate package `jinja2==3.1.3 @ registry+https://astral-sh.github.io/pytorch-mirror/whl/cu118`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -18434,7 +18478,7 @@ fn lock_multiple_sources_index_overlapping_extras() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -18443,7 +18487,8 @@ fn lock_multiple_sources_index_overlapping_extras() -> Result<()> {
     error: Requirements contain conflicting indexes for package `jinja2` in all marker environments:
     - https://astral-sh.github.io/pytorch-mirror/whl/cu118
     - https://astral-sh.github.io/pytorch-mirror/whl/cu124
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -18474,7 +18519,7 @@ fn lock_multiple_index_with_missing_extra() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -18482,7 +18527,8 @@ fn lock_multiple_index_with_missing_extra() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Source entry for `jinja2` only applies to extra `cu118`, but the `cu118` extra does not exist. When an extra is present on a source (e.g., `extra = "cu118"`), the relevant package must be included in the `project.optional-dependencies` section for that extra (e.g., `project.optional-dependencies = { "cu118" = ["jinja2"] }`).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -18517,7 +18563,7 @@ fn lock_multiple_index_with_absent_extra() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -18525,7 +18571,8 @@ fn lock_multiple_index_with_absent_extra() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Source entry for `jinja2` only applies to extra `cu118`, but `jinja2` was not found under the `project.optional-dependencies` section for that extra. When an extra is present on a source (e.g., `extra = "cu118"`), the relevant package must be included in the `project.optional-dependencies` section for that extra (e.g., `project.optional-dependencies = { "cu118" = ["jinja2"] }`).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -18556,7 +18603,7 @@ fn lock_multiple_index_with_missing_group() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -18564,7 +18611,8 @@ fn lock_multiple_index_with_missing_group() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Source entry for `jinja2` only applies to dependency group `cu118`, but the `cu118` group does not exist. When a group is present on a source (e.g., `group = "cu118"`), the relevant package must be included in the `dependency-groups` section for that extra (e.g., `dependency-groups = { "cu118" = ["jinja2"] }`).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -18599,7 +18647,7 @@ fn lock_multiple_index_with_absent_group() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -18607,7 +18655,8 @@ fn lock_multiple_index_with_absent_group() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Source entry for `jinja2` only applies to dependency group `cu118`, but `jinja2` was not found under the `dependency-groups` section for that group. When a group is present on a source (e.g., `group = "cu118"`), the relevant package must be included in the `dependency-groups` section for that extra (e.g., `dependency-groups = { "cu118" = ["jinja2"] }`).
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -18944,7 +18993,7 @@ fn lock_group_include_cycle() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -18952,7 +19001,8 @@ fn lock_group_include_cycle() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Detected a cycle in `dependency-groups`: `bar` -> `foobar` -> `foo` -> `bar`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -18978,7 +19028,7 @@ fn lock_group_include_dev() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -18986,7 +19036,8 @@ fn lock_group_include_dev() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Group `foo` includes the `dev` group (`include = "dev"`), but only `tool.uv.dev-dependencies` was found. To reference the `dev` group via an `include`, remove the `tool.uv.dev-dependencies` section and add any development dependencies to the `dev` entry in the `[dependency-groups]` table instead.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -19009,7 +19060,7 @@ fn lock_group_include_missing() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -19017,7 +19068,8 @@ fn lock_group_include_missing() -> Result<()> {
     ----- stderr -----
       × Failed to build `project @ file://[TEMP_DIR]/`
       ╰─▶ Failed to find group `bar` included by `foo`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -19040,7 +19092,7 @@ fn lock_group_invalid_entry_package() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -19051,9 +19103,10 @@ fn lock_group_invalid_entry_package() -> Result<()> {
       ╰─▶ no such comparison operator "!", must be one of ~= == != <= >= < > ===
           invalid!
                  ^
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
-    uv_snapshot!(context.filters(), context.sync().arg("--group").arg("foo"), @r###"
+    uv_snapshot!(context.filters(), context.sync().arg("--group").arg("foo"), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -19064,7 +19117,8 @@ fn lock_group_invalid_entry_package() -> Result<()> {
       ╰─▶ no such comparison operator "!", must be one of ~= == != <= >= < > ===
           invalid!
                  ^
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -19087,7 +19141,7 @@ fn lock_group_invalid_entry_group_name() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -19099,8 +19153,8 @@ fn lock_group_invalid_entry_group_name() -> Result<()> {
     9 |         foo = [{include-group = "invalid!"}]
       |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     Not a valid package or extra name: "invalid!". Names must start and end with a letter or digit and may only contain -, _, ., and alphanumeric characters.
-
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -19124,7 +19178,7 @@ fn lock_group_invalid_duplicate_group_name() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -19136,7 +19190,8 @@ fn lock_group_invalid_duplicate_group_name() -> Result<()> {
     8 |         [dependency-groups]
       |         ^^^^^^^^^^^^^^^^^^^
     duplicate dependency group: `foo-bar`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -19189,7 +19244,7 @@ fn lock_group_invalid_entry_type() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -19201,8 +19256,8 @@ fn lock_group_invalid_entry_type() -> Result<()> {
     9 |         foo = [{include-group = true}]
       |                                 ^^^^
     invalid type: boolean `true`, expected a string
-
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -19225,7 +19280,7 @@ fn lock_group_empty_entry_table() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -19237,8 +19292,8 @@ fn lock_group_empty_entry_table() -> Result<()> {
     9 |         foo = [{}]
       |                ^^
     missing field `include-group`
-
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -20932,7 +20987,7 @@ fn lock_dynamic_to_static() -> Result<()> {
     )?;
 
     // Rerunning with `--locked` should fail, since the project is no longer dynamic.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -20940,7 +20995,8 @@ fn lock_dynamic_to_static() -> Result<()> {
     ----- stderr -----
     Resolved 1 package in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.lock(), @r###"
     success: true
@@ -21061,7 +21117,7 @@ fn lock_static_to_dynamic() -> Result<()> {
         .write_str("__version__ = '0.1.0'")?;
 
     // Rerunning with `--locked` should fail, since the project is no longer static.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -21069,7 +21125,8 @@ fn lock_static_to_dynamic() -> Result<()> {
     ----- stderr -----
     Resolved 1 package in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.lock(), @r###"
     success: true
@@ -21161,7 +21218,7 @@ fn lock_bump_static_version() -> Result<()> {
     )?;
 
     // Rerunning with `--locked` should fail.
-    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -21169,7 +21226,8 @@ fn lock_bump_static_version() -> Result<()> {
     ----- stderr -----
     Resolved 1 package in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.lock(), @r###"
     success: true
@@ -21229,7 +21287,7 @@ fn lock_derivation_chain_prod() -> Result<()> {
         ])
         .collect::<Vec<_>>();
 
-    uv_snapshot!(filters, context.lock(), @r###"
+    uv_snapshot!(filters, context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -21259,7 +21317,8 @@ fn lock_derivation_chain_prod() -> Result<()> {
 
           hint: This usually indicates a problem with the package or the build environment.
       help: `wsgiref` (v0.1.2) was included because `project` (v0.1.0) depends on `wsgiref==0.1.2`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -21289,7 +21348,7 @@ fn lock_derivation_chain_extra() -> Result<()> {
         ])
         .collect::<Vec<_>>();
 
-    uv_snapshot!(filters, context.lock(), @r###"
+    uv_snapshot!(filters, context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -21319,7 +21378,8 @@ fn lock_derivation_chain_extra() -> Result<()> {
 
           hint: This usually indicates a problem with the package or the build environment.
       help: `wsgiref` (v0.1.2) was included because `project[wsgi]` (v0.1.0) depends on `wsgiref>=0.1`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -21351,7 +21411,7 @@ fn lock_derivation_chain_group() -> Result<()> {
         ])
         .collect::<Vec<_>>();
 
-    uv_snapshot!(filters, context.lock(), @r###"
+    uv_snapshot!(filters, context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -21381,7 +21441,8 @@ fn lock_derivation_chain_group() -> Result<()> {
 
           hint: This usually indicates a problem with the package or the build environment.
       help: `wsgiref` (v0.1.2) was included because `project:wsgi` (v0.1.0) depends on `wsgiref`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -21424,7 +21485,7 @@ fn lock_derivation_chain_extended() -> Result<()> {
         ])
         .collect::<Vec<_>>();
 
-    uv_snapshot!(filters, context.lock(), @r###"
+    uv_snapshot!(filters, context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -21454,7 +21515,8 @@ fn lock_derivation_chain_extended() -> Result<()> {
 
           hint: This usually indicates a problem with the package or the build environment.
       help: `wsgiref` (v0.1.2) was included because `project` (v0.1.0) depends on `child` (v0.1.0) which depends on `wsgiref>=0.1, <0.2`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -21480,7 +21542,7 @@ fn mismatched_name_self_editable() -> Result<()> {
     )?;
 
     // Running `uv sync` should generate a lockfile.
-    uv_snapshot!(context.filters(), context.sync(), @r###"
+    uv_snapshot!(context.filters(), context.sync(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -21490,7 +21552,8 @@ fn mismatched_name_self_editable() -> Result<()> {
       × Failed to build `foo @ file://[TEMP_DIR]/`
       ╰─▶ Package metadata name `project` does not match given name `foo`
       help: `foo` was included because `project` (v0.1.0) depends on `foo`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -21822,14 +21885,15 @@ fn lock_no_build_static_metadata() -> Result<()> {
     "###);
 
     // Install from the lockfile.
-    uv_snapshot!(context.filters(), context.sync().arg("--no-build").arg("--frozen"), @r###"
+    uv_snapshot!(context.filters(), context.sync().arg("--no-build").arg("--frozen"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Distribution `dummy==0.1.0 @ virtual+.` can't be installed because it is marked as `--no-build` but has no binary distribution
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -21849,7 +21913,7 @@ fn lock_no_build_dynamic_metadata() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock().arg("--no-build"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--no-build"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -21857,7 +21921,8 @@ fn lock_no_build_dynamic_metadata() -> Result<()> {
     ----- stderr -----
       × Failed to build `dummy @ file://[TEMP_DIR]/`
       ╰─▶ Building source distributions for `dummy` is disabled
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -22075,7 +22140,7 @@ fn lock_self_incompatible() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -22085,7 +22150,8 @@ fn lock_self_incompatible() -> Result<()> {
       ╰─▶ Because your project depends on itself at an incompatible version (project==0.2.0), we can conclude that your project's requirements are unsatisfiable.
 
           hint: The project `project` depends on itself at an incompatible version. This is likely a mistake. If you intended to depend on a third-party package named `project`, consider renaming the project `project` to avoid creating a conflict.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -22210,7 +22276,7 @@ fn lock_self_extra_to_same_extra_incompatible() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -22220,7 +22286,8 @@ fn lock_self_extra_to_same_extra_incompatible() -> Result<()> {
       ╰─▶ Because project[foo] depends on itself at an incompatible version (project==0.2.0) and your project requires project[foo], we can conclude that your project's requirements are unsatisfiable.
 
           hint: The project `project` depends on itself at an incompatible version. This is likely a mistake. If you intended to depend on a third-party package named `project`, consider renaming the project `project` to avoid creating a conflict.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -22244,7 +22311,7 @@ fn lock_self_extra_to_other_extra_incompatible() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -22254,7 +22321,8 @@ fn lock_self_extra_to_other_extra_incompatible() -> Result<()> {
       ╰─▶ Because project[foo] depends on itself at an incompatible version (project==0.2.0) and your project requires project[foo], we can conclude that your project's requirements are unsatisfiable.
 
           hint: The project `project` depends on itself at an incompatible version. This is likely a mistake. If you intended to depend on a third-party package named `project`, consider renaming the project `project` to avoid creating a conflict.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -22379,7 +22447,7 @@ fn lock_self_extra_incompatible() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -22389,7 +22457,8 @@ fn lock_self_extra_incompatible() -> Result<()> {
       ╰─▶ Because project[foo] depends on itself at an incompatible version (project==0.2.0) and your project requires project[foo], we can conclude that your project's requirements are unsatisfiable.
 
           hint: The project `project` depends on itself at an incompatible version. This is likely a mistake. If you intended to depend on a third-party package named `project`, consider renaming the project `project` to avoid creating a conflict.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -22508,7 +22577,7 @@ fn lock_self_marker_incompatible() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -22518,7 +22587,8 @@ fn lock_self_marker_incompatible() -> Result<()> {
       ╰─▶ Because only project{sys_platform == 'win32'}<=0.1 is available and your project depends on itself at an incompatible version (project{sys_platform == 'win32'}>0.1), we can conclude that your project's requirements are unsatisfiable.
 
           hint: The project `project` depends on itself at an incompatible version. This is likely a mistake. If you intended to depend on a third-party package named `project`, consider renaming the project `project` to avoid creating a conflict.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -22607,7 +22677,7 @@ fn lock_missing_git_prefix() -> Result<()> {
         "#,
     )?;
 
-    uv_snapshot!(context.filters(), context.lock(), @r###"
+    uv_snapshot!(context.filters(), context.lock(), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -22616,7 +22686,8 @@ fn lock_missing_git_prefix() -> Result<()> {
       × Failed to build `project @ file://[TEMP_DIR]/`
       ├─▶ Failed to parse entry: `workspace-in-root-test`
       ╰─▶ `workspace-in-root-test` is associated with a URL source, but references a Git repository. Consider using a Git source instead (e.g., `workspace-in-root-test = { git = "https://github.com/astral-sh/workspace-in-root-test" }`)
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    "#);
 
     Ok(())
 }
@@ -22943,7 +23014,7 @@ fn lock_script() -> Result<()> {
     })?;
 
     // Re-run with `--locked`.
-    uv_snapshot!(context.filters(), context.lock().arg("--script").arg("script.py").arg("--locked"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--script").arg("script.py").arg("--locked"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -22951,7 +23022,8 @@ fn lock_script() -> Result<()> {
     ----- stderr -----
     Resolved 4 packages in [TIME]
     error: The lockfile at `uv.lock` needs to be updated, but `--locked` was provided. To update the lockfile, run `uv lock`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -23094,14 +23166,15 @@ fn lock_script_path() -> Result<()> {
 fn lock_script_error() -> Result<()> {
     let context = TestContext::new("3.12");
 
-    uv_snapshot!(context.filters(), context.lock().arg("--script").arg("script.py"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--script").arg("script.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Failed to read `script.py` (not found); run `uv init --script script.py` to create a PEP 723 script
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     let script = context.temp_dir.child("script.py");
     script.write_str(indoc! { r"
@@ -23109,14 +23182,15 @@ fn lock_script_error() -> Result<()> {
        "
     })?;
 
-    uv_snapshot!(context.filters(), context.lock().arg("--script").arg("script.py"), @r###"
+    uv_snapshot!(context.filters(), context.lock().arg("--script").arg("script.py"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: `script.py` does not contain a PEP 723 metadata tag; run `uv init --script script.py` to initialize the script
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock.log for detailed logs
+    ");
 
     Ok(())
 }

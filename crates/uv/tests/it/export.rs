@@ -887,7 +887,7 @@ fn frozen() -> Result<()> {
     // Remove the child `pyproject.toml`.
     fs_err::remove_dir_all(child.path())?;
 
-    uv_snapshot!(context.filters(), context.export().arg("--all-packages"), @r###"
+    uv_snapshot!(context.filters(), context.export().arg("--all-packages"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -896,7 +896,8 @@ fn frozen() -> Result<()> {
       × Failed to build `project @ file://[TEMP_DIR]/`
       ├─▶ Failed to parse entry: `child`
       ╰─▶ `child` references a workspace in `tool.uv.sources` (e.g., `child = { workspace = true }`), but is not a workspace member
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/export.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.export().arg("--all-packages").arg("--frozen"), @r###"
     success: true
@@ -2397,7 +2398,7 @@ fn conflicts() -> Result<()> {
     Resolved 4 packages in [TIME]
     "###);
 
-    uv_snapshot!(context.filters(), context.export().arg("--extra").arg("extra1").arg("--extra").arg("extra2"), @r###"
+    uv_snapshot!(context.filters(), context.export().arg("--extra").arg("extra1").arg("--extra").arg("extra2"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2405,7 +2406,8 @@ fn conflicts() -> Result<()> {
     ----- stderr -----
     Resolved 4 packages in [TIME]
     error: Extras `extra1` and `extra2` are incompatible with the declared conflicts: {`project[extra1]`, `project[extra2]`}
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/export.log for detailed logs
+    ");
 
     Ok(())
 }

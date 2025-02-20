@@ -615,5 +615,9 @@ impl EnvVars {
     /// Enables fetching files stored in Git LFS when installing a package from a Git repository.
     pub const UV_GIT_LFS: &'static str = "UV_GIT_LFS";
 
+    /// Enables persistent file logging. If set, uv will write log output to this file.
     pub const UV_LOG: &'static str = "UV_LOG";
+
+    /// To specify target directory for logs. Currently a workaround to write logs out of TEMP_DIR when running snapshot tests. 
+    pub const UV_LOG_DIR: &'static str = "UV_LOG_DIR";
 }

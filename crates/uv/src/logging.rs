@@ -219,9 +219,9 @@ pub(crate) fn setup_logging(
             show_spans: false,
         };
 
-        // If the TEST_DIR environment variable is set, change current directory to that.
-        if let Ok(test_dir) = env::var("TEST_DIR") {
-            env::set_current_dir(&test_dir).expect("Failed to set current directory to TEST_DIR");
+        // If the `UV_LOG_DIR` environment variable is set, change current directory to that temporarily to setup file writer.
+        if let Ok(log_dir) = env::var(uv_static::EnvVars::UV_LOG_DIR) {
+            env::set_current_dir(&log_dir).expect("Failed to set current directory to TEST_DIR");
         }
         let mut new_path = path.clone();
         new_path.set_extension("log");

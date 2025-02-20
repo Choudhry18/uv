@@ -579,7 +579,7 @@ fn conflict_in_fork() -> Result<()> {
     let mut cmd = context.lock();
     cmd.env_remove(EnvVars::UV_EXCLUDE_NEWER);
     cmd.arg("--index-url").arg(packse_index_url());
-    uv_snapshot!(filters, cmd, @r###"
+    uv_snapshot!(filters, cmd, @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -593,7 +593,8 @@ fn conflict_in_fork() -> Result<()> {
               package-a{sys_platform == 'darwin'}==1.0.0
               package-a{sys_platform == 'darwin'}>2
           and your project depends on package-a{sys_platform == 'darwin'}<2, we can conclude that your project's requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock_scenarios.log for detailed logs
+    "
     );
 
     Ok(())
@@ -647,7 +648,7 @@ fn fork_conflict_unsatisfiable() -> Result<()> {
     let mut cmd = context.lock();
     cmd.env_remove(EnvVars::UV_EXCLUDE_NEWER);
     cmd.arg("--index-url").arg(packse_index_url());
-    uv_snapshot!(filters, cmd, @r###"
+    uv_snapshot!(filters, cmd, @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -655,7 +656,8 @@ fn fork_conflict_unsatisfiable() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because your project depends on package-a>=2 and package-a<2, we can conclude that your project's requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock_scenarios.log for detailed logs
+    "
     );
 
     Ok(())
@@ -1314,7 +1316,7 @@ fn fork_marker_disjoint() -> Result<()> {
     let mut cmd = context.lock();
     cmd.env_remove(EnvVars::UV_EXCLUDE_NEWER);
     cmd.arg("--index-url").arg(packse_index_url());
-    uv_snapshot!(filters, cmd, @r###"
+    uv_snapshot!(filters, cmd, @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1322,7 +1324,8 @@ fn fork_marker_disjoint() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because your project depends on package-a{sys_platform == 'linux'}>=2 and package-a{sys_platform == 'linux'}<2, we can conclude that your project's requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock_scenarios.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2933,7 +2936,7 @@ fn fork_non_local_fork_marker_direct() -> Result<()> {
     let mut cmd = context.lock();
     cmd.env_remove(EnvVars::UV_EXCLUDE_NEWER);
     cmd.arg("--index-url").arg(packse_index_url());
-    uv_snapshot!(filters, cmd, @r###"
+    uv_snapshot!(filters, cmd, @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2942,7 +2945,8 @@ fn fork_non_local_fork_marker_direct() -> Result<()> {
       × No solution found when resolving dependencies:
       ╰─▶ Because package-a==1.0.0 depends on package-c<2.0.0 and package-b==1.0.0 depends on package-c>=2.0.0, we can conclude that package-a{sys_platform == 'linux'}==1.0.0 and package-b{sys_platform == 'darwin'}==1.0.0 are incompatible.
           And because your project depends on package-a{sys_platform == 'linux'}==1.0.0 and package-b{sys_platform == 'darwin'}==1.0.0, we can conclude that your project's requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock_scenarios.log for detailed logs
+    "
     );
 
     Ok(())
@@ -3005,7 +3009,7 @@ fn fork_non_local_fork_marker_transitive() -> Result<()> {
     let mut cmd = context.lock();
     cmd.env_remove(EnvVars::UV_EXCLUDE_NEWER);
     cmd.arg("--index-url").arg(packse_index_url());
-    uv_snapshot!(filters, cmd, @r###"
+    uv_snapshot!(filters, cmd, @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -3018,7 +3022,8 @@ fn fork_non_local_fork_marker_transitive() -> Result<()> {
           we can conclude that package-a==1.0.0 depends on package-c{sys_platform == 'linux'}==1.0.0.
           And because only package-c{sys_platform == 'darwin'}<=2.0.0 is available and package-b==1.0.0 depends on package-c{sys_platform == 'darwin'}>=2.0.0, we can conclude that package-a==1.0.0 and package-b==1.0.0 are incompatible.
           And because your project depends on package-a==1.0.0 and package-b==1.0.0, we can conclude that your project's requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/lock_scenarios.log for detailed logs
+    "
     );
 
     Ok(())

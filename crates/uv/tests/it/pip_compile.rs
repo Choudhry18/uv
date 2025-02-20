@@ -107,14 +107,15 @@ fn missing_requirements_in() {
     let requirements_in = context.temp_dir.child("requirements.in");
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: File not found: `requirements.in`
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     requirements_in.assert(predicates::path::missing());
@@ -794,14 +795,15 @@ optional-dependencies.foo = [
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("pyproject.toml")
             .arg("--extra")
-            .arg("bar"), @r###"
+            .arg("bar"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Requested extra not found: bar
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -950,7 +952,7 @@ build-backend = "poetry.core.masonry.api"
     )?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("pyproject.toml"), @r###"
+            .arg("pyproject.toml"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -962,8 +964,8 @@ build-backend = "poetry.core.masonry.api"
     13 | [project.dependencies]
        | ^^^^^^^^^^^^^^^^^^^^^^
     invalid type: map, expected a sequence
-
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -1158,7 +1160,7 @@ dependencies = [
     )?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("pyproject.toml"), @r###"
+            .arg("pyproject.toml"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -1170,8 +1172,8 @@ dependencies = [
     5 | name = "!project"
       |        ^^^^^^^^^^
     Not a valid package or extra name: "!project". Names must start and end with a letter or digit and may only contain -, _, ., and alphanumeric characters.
-
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "#
     );
 
     Ok(())
@@ -1203,14 +1205,15 @@ optional-dependencies.foo = [
             .arg("--extra")
             .arg("bar")
             .arg("--extra")
-            .arg("foobar"), @r###"
+            .arg("foobar"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Requested extras not found: bar, foobar
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -1226,14 +1229,15 @@ fn compile_requirements_file_extra() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
             .arg("--all-extras"),
-            @r###"
+            @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Requesting extras requires a `pyproject.toml`, `setup.cfg`, or `setup.py` file.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -1489,7 +1493,7 @@ fn compile_python_37() -> Result<()> {
     uv_snapshot!(filters, context.pip_compile()
             .arg("requirements.in")
             .arg("--python-version")
-            .arg("3.7"), @r###"
+            .arg("3.7"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1500,7 +1504,8 @@ fn compile_python_37() -> Result<()> {
           And because you require black==23.10.1, we can conclude that your requirements are unsatisfiable.
 
           hint: The `--python-version` value (>=3.7) includes Python versions that are not supported by your dependencies (e.g., black==23.10.1 only supports >=3.8). Consider using a higher `--python-version` value.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -2027,7 +2032,7 @@ fn compile_git_mismatched_name() -> Result<()> {
         .write_str("flask @ git+https://github.com/pallets/flask.git@2.0.0\ndask @ git+https://github.com/pallets/flask.git@3.0.0")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2035,7 +2040,8 @@ fn compile_git_mismatched_name() -> Result<()> {
     ----- stderr -----
       × Failed to download and build `dask @ git+https://github.com/pallets/flask.git@3.0.0`
       ╰─▶ Package metadata name `flask` does not match given name `dask`
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2120,7 +2126,7 @@ fn conflicting_direct_url_dependency() -> Result<()> {
     requirements_in.write_str("werkzeug==3.0.0\nwerkzeug @ https://files.pythonhosted.org/packages/ff/1d/960bb4017c68674a1cb099534840f18d3def3ce44aed12b5ed8b78e0153e/Werkzeug-2.0.0-py3-none-any.whl")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2128,7 +2134,8 @@ fn conflicting_direct_url_dependency() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because there is no version of werkzeug==3.0.0 and you require werkzeug==3.0.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2168,7 +2175,7 @@ fn conflicting_repeated_url_dependency_version_mismatch() -> Result<()> {
     requirements_in.write_str("werkzeug @ https://files.pythonhosted.org/packages/bd/24/11c3ea5a7e866bf2d97f0501d0b4b1c9bbeade102bb4b588f0d2919a5212/Werkzeug-2.0.1-py3-none-any.whl\nwerkzeug @ https://files.pythonhosted.org/packages/ff/1d/960bb4017c68674a1cb099534840f18d3def3ce44aed12b5ed8b78e0153e/Werkzeug-2.0.0-py3-none-any.whl")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2177,7 +2184,8 @@ fn conflicting_repeated_url_dependency_version_mismatch() -> Result<()> {
     error: Requirements contain conflicting URLs for package `werkzeug`:
     - https://files.pythonhosted.org/packages/bd/24/11c3ea5a7e866bf2d97f0501d0b4b1c9bbeade102bb4b588f0d2919a5212/Werkzeug-2.0.1-py3-none-any.whl
     - https://files.pythonhosted.org/packages/ff/1d/960bb4017c68674a1cb099534840f18d3def3ce44aed12b5ed8b78e0153e/Werkzeug-2.0.0-py3-none-any.whl
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2223,7 +2231,7 @@ fn conflicting_repeated_url_dependency_version_match() -> Result<()> {
     requirements_in.write_str("werkzeug @ git+https://github.com/pallets/werkzeug.git@2.0.0\nwerkzeug @ https://files.pythonhosted.org/packages/ff/1d/960bb4017c68674a1cb099534840f18d3def3ce44aed12b5ed8b78e0153e/Werkzeug-2.0.0-py3-none-any.whl")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2232,7 +2240,8 @@ fn conflicting_repeated_url_dependency_version_match() -> Result<()> {
     error: Requirements contain conflicting URLs for package `werkzeug`:
     - git+https://github.com/pallets/werkzeug.git@2.0.0
     - https://files.pythonhosted.org/packages/ff/1d/960bb4017c68674a1cb099534840f18d3def3ce44aed12b5ed8b78e0153e/Werkzeug-2.0.0-py3-none-any.whl
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2246,7 +2255,7 @@ fn conflicting_transitive_url_dependency() -> Result<()> {
     requirements_in.write_str("flask==3.0.0\nwerkzeug @ https://files.pythonhosted.org/packages/ff/1d/960bb4017c68674a1cb099534840f18d3def3ce44aed12b5ed8b78e0153e/Werkzeug-2.0.0-py3-none-any.whl")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2255,7 +2264,8 @@ fn conflicting_transitive_url_dependency() -> Result<()> {
       × No solution found when resolving dependencies:
       ╰─▶ Because only werkzeug<3.0.0 is available and flask==3.0.0 depends on werkzeug>=3.0.0, we can conclude that flask==3.0.0 cannot be used.
           And because you require flask==3.0.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2303,7 +2313,7 @@ fn conflicting_repeated_url_dependency() -> Result<()> {
     "})?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2312,7 +2322,8 @@ fn conflicting_repeated_url_dependency() -> Result<()> {
     error: Requirements contain conflicting URLs for package `uv-public-pypackage`:
     - git+https://github.com/astral-test/uv-public-pypackage.git@0.0.1
     - git+https://github.com/astral-test/uv-public-pypackage.git@0.0.2
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2427,7 +2438,7 @@ fn incompatible_narrowed_url_dependency() -> Result<()> {
     "})?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2436,7 +2447,8 @@ fn incompatible_narrowed_url_dependency() -> Result<()> {
     error: Requirements contain conflicting URLs for package `uv-public-pypackage`:
     - git+https://github.com/astral-test/uv-public-pypackage@b270df1a2fb5d012294e9aaf05e7e0bab1e6a389
     - git+https://github.com/astral-test/uv-public-pypackage@test-branch
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2598,7 +2610,7 @@ fn requirement_constraint_override_url() -> Result<()> {
         .arg("--constraint")
         .arg("constraints.txt")
         .arg("--override")
-        .arg("overrides.txt"), @r###"
+        .arg("overrides.txt"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2606,7 +2618,8 @@ fn requirement_constraint_override_url() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because there is no version of anyio==3.7.0 and you require anyio==3.7.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2786,7 +2799,7 @@ optional-dependencies.bar = [
             .arg("--all-extras")
             .arg("--extra")
             .arg("foo"),
-            @r###"
+            @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2794,10 +2807,10 @@ optional-dependencies.bar = [
     ----- stderr -----
     error: the argument '--all-extras' cannot be used with '--extra <EXTRA>'
 
-    Usage: uv pip compile --cache-dir [CACHE_DIR] --all-extras --exclude-newer <EXCLUDE_NEWER> <SRC_FILE>...
+    Usage: uv pip compile --cache-dir [CACHE_DIR] --all-extras --exclude-newer <EXCLUDE_NEWER> --log <PATH> <SRC_FILE>...
 
     For more information, try '--help'.
-    "###
+    "
     );
 
     Ok(())
@@ -2820,7 +2833,7 @@ dependencies = ["anyio==3.7.0", "anyio==4.0.0"]
     )?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("pyproject.toml"), @r###"
+            .arg("pyproject.toml"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2828,7 +2841,8 @@ dependencies = ["anyio==3.7.0", "anyio==4.0.0"]
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because my-project depends on anyio==3.7.0 and anyio==4.0.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -2852,7 +2866,7 @@ dependencies = ["anyio==300.1.4"]
     )?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("pyproject.toml"), @r###"
+            .arg("pyproject.toml"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -2860,7 +2874,8 @@ dependencies = ["anyio==300.1.4"]
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because there is no version of anyio==300.1.4 and my-project depends on anyio==300.1.4, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -3270,14 +3285,15 @@ fn compile_wheel_path_dependency_missing() -> Result<()> {
     ))?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Distribution not found at: file://[TEMP_DIR]/flask-3.0.0-py3-none-any.whl
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -3316,7 +3332,7 @@ fn compile_yanked_version_indirect() -> Result<()> {
     requirements_in.write_str("attrs>20.3.0,<21.2.0")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -3329,7 +3345,8 @@ fn compile_yanked_version_indirect() -> Result<()> {
               attrs>21.2.0
           and attrs==21.1.0 was yanked (reason: Installable but not importable on Python 3.4), we can conclude that attrs>20.3.0,<21.2.0 cannot be used.
           And because you require attrs>20.3.0,<21.2.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -3647,7 +3664,7 @@ fn override_dependency_from_workspace_invalid_syntax() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("pyproject.toml")
             .current_dir(&context.temp_dir)
-            , @r###"
+            , @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -3670,8 +3687,8 @@ fn override_dependency_from_workspace_invalid_syntax() -> Result<()> {
     no such comparison operator "=", must be one of ~= == != <= >= < > ===
     werkzeug=2.3.0
             ^^^^^^
-
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "#
     );
 
     Ok(())
@@ -4022,7 +4039,7 @@ fn error_missing_unnamed_env_var() -> Result<()> {
     requirements_in.write_str("${URL}")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -4032,7 +4049,8 @@ fn error_missing_unnamed_env_var() -> Result<()> {
       Caused by: Expected package name starting with an alphanumeric character, found `$`
     ${URL}
     ^
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -5346,14 +5364,15 @@ fn missing_path_requirement() -> Result<()> {
         .collect();
 
     uv_snapshot!(filters, context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Distribution not found at: file://tmp/anyio-3.7.0.tar.gz
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -5366,7 +5385,7 @@ fn missing_editable_file() -> Result<()> {
     requirements_in.write_str("-e foo/anyio-3.7.0.tar.gz")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -5374,7 +5393,8 @@ fn missing_editable_file() -> Result<()> {
     ----- stderr -----
     error: Unsupported editable requirement in `requirements.in`
       Caused by: Editable must refer to a local directory, not an archive: `file://[TEMP_DIR]/foo/anyio-3.7.0.tar.gz`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -5387,14 +5407,15 @@ fn missing_editable_directory() -> Result<()> {
     requirements_in.write_str("-e foo/bar")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Distribution not found at: file://[TEMP_DIR]/foo/bar
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -5605,14 +5626,15 @@ fn resolver_legacy() -> Result<()> {
 
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
-            .arg("--resolver=legacy"), @r###"
+            .arg("--resolver=legacy"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: pip-compile's `--resolver=legacy` is unsupported (uv always backtracks)
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6123,7 +6145,7 @@ fn no_index_requirements_txt() -> Result<()> {
     requirements_in.write_str("--no-index\ntqdm")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6133,7 +6155,8 @@ fn no_index_requirements_txt() -> Result<()> {
       ╰─▶ Because tqdm was not found in the provided package locations and you require tqdm, we can conclude that your requirements are unsatisfiable.
 
           hint: Packages were unavailable because index lookups were disabled and no additional package locations were provided (try: `--find-links <uri>`)
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6181,14 +6204,15 @@ fn conflicting_index_urls_requirements_txt() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
             .arg("--constraint")
-            .arg("constraints.in"), @r###"
+            .arg("constraints.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Multiple index URLs specified: `https://google.com/` vs. `https://wikipedia.org/`
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6232,7 +6256,7 @@ fn offline_registry() -> Result<()> {
     // Resolve with `--offline` with an empty cache.
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
-            .arg("--offline"), @r###"
+            .arg("--offline"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6242,7 +6266,8 @@ fn offline_registry() -> Result<()> {
       ╰─▶ Because black was not found in the cache and you require black==23.10.1, we can conclude that your requirements are unsatisfiable.
 
           hint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     // Populate the cache.
@@ -6363,7 +6388,7 @@ fn offline_find_links() -> Result<()> {
             .arg("requirements.in")
             .arg("--find-links")
             .arg("https://astral-sh.github.io/pytorch-mirror/whl/torch_stable.html")
-            .arg("--offline"), @r###"
+            .arg("--offline"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6373,7 +6398,8 @@ fn offline_find_links() -> Result<()> {
       ╰─▶ Because tqdm was not found in the cache and you require tqdm, we can conclude that your requirements are unsatisfiable.
 
           hint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     // Resolve with `--offline`, `--find-links`, and `--no-index`.
@@ -6382,7 +6408,7 @@ fn offline_find_links() -> Result<()> {
             .arg("--find-links")
             .arg("https://astral-sh.github.io/pytorch-mirror/whl/torch_stable.html")
             .arg("--no-index")
-            .arg("--offline"), @r###"
+            .arg("--offline"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6392,7 +6418,8 @@ fn offline_find_links() -> Result<()> {
       ╰─▶ Because tqdm was not found in the cache and you require tqdm, we can conclude that your requirements are unsatisfiable.
 
           hint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6408,7 +6435,7 @@ fn offline_direct_url() -> Result<()> {
     // Resolve with `--offline` with an empty cache.
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
-            .arg("--offline"), @r###"
+            .arg("--offline"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6416,7 +6443,8 @@ fn offline_direct_url() -> Result<()> {
     ----- stderr -----
       × Failed to download `iniconfig @ https://files.pythonhosted.org/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl`
       ╰─▶ Network connectivity is disabled, but the requested data wasn't found in the cache for: `https://files.pythonhosted.org/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl`
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     // Populate the cache.
@@ -6468,7 +6496,7 @@ fn invalid_metadata_requires_python() -> Result<()> {
             .arg("requirements.in")
             .arg("--no-index")
             .arg("--find-links")
-            .arg(context.workspace_root.join("scripts").join("links")), @r###"
+            .arg(context.workspace_root.join("scripts").join("links")), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6481,7 +6509,9 @@ fn invalid_metadata_requires_python() -> Result<()> {
             Failed to parse version: Unexpected end of version specifier, expected operator:
             12
             ^^
-    "###
+
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6499,7 +6529,7 @@ fn invalid_metadata_multiple_dist_info() -> Result<()> {
             .arg("requirements.in")
             .arg("--no-index")
             .arg("--find-links")
-            .arg(context.workspace_root.join("scripts").join("links")), @r###"
+            .arg(context.workspace_root.join("scripts").join("links")), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6510,7 +6540,8 @@ fn invalid_metadata_multiple_dist_info() -> Result<()> {
 
           hint: The structure of `validation` (v3.0.0) was invalid:
             Multiple .dist-info directories found: validation-2.0.0, validation-3.0.0
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6768,7 +6799,7 @@ fn compile_constraints_incompatible_url() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
             .arg("--constraint")
-            .arg("constraints.txt"), @r###"
+            .arg("constraints.txt"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6776,7 +6807,8 @@ fn compile_constraints_incompatible_url() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because only anyio>=4 is available and you require anyio<4, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6792,7 +6824,7 @@ fn index_url_in_requirements() -> Result<()> {
         .write_str("--index-url https://astral-sh.github.io/pytorch-mirror/whl\nanyio<4")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -6800,7 +6832,8 @@ fn index_url_in_requirements() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because anyio was not found in the package registry and you require anyio<4, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -6848,7 +6881,7 @@ fn unsupported_scheme() -> Result<()> {
     requirements_in.write_str("anyio @ bzr+https://example.com/anyio")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -6858,7 +6891,8 @@ fn unsupported_scheme() -> Result<()> {
       Caused by: Unsupported URL prefix `bzr` in URL: `bzr+https://example.com/anyio` (Bazaar is not supported)
     anyio @ bzr+https://example.com/anyio
             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -9540,7 +9574,7 @@ fn compile_constraints_incompatible_version() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
             .arg("--constraint")
-            .arg("constraints.txt"), @r###"
+            .arg("constraints.txt"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -9548,7 +9582,8 @@ fn compile_constraints_incompatible_version() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because you require filelock==1.0.0 and filelock==3.8.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -9568,7 +9603,7 @@ fn conflicting_url_markers() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
             .arg("requirements.in")
             .arg("--constraint")
-            .arg("constraints.txt"), @r###"
+            .arg("constraints.txt"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -9576,7 +9611,8 @@ fn conflicting_url_markers() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because you require filelock==1.0.0 and filelock==3.8.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -9722,7 +9758,7 @@ fn override_with_incompatible_constraint() -> Result<()> {
             .arg("--constraint")
             .arg("constraints.txt")
             .arg("--override")
-            .arg("overrides.txt"), @r###"
+            .arg("overrides.txt"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -9730,7 +9766,8 @@ fn override_with_incompatible_constraint() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ Because you require anyio>=3.0.0 and anyio<3.0.0, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -10379,7 +10416,7 @@ requires-python = ">=3.13"
     requirements_in.write_str(&format!("-e {}", editable_dir.path().display()))?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-        .arg("requirements.in"), @r###"
+        .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -10388,7 +10425,8 @@ requires-python = ">=3.13"
       × No solution found when resolving dependencies:
       ╰─▶ Because the current Python version (3.12.[X]) does not satisfy Python>=3.13 and example==0.0.0 depends on Python>=3.13, we can conclude that example==0.0.0 cannot be used.
           And because only example==0.0.0 is available and you require example, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -10431,7 +10469,7 @@ requires-python = ">=3.13"
 
     uv_snapshot!(filters, context.pip_compile()
         .arg("requirements.in")
-        .arg("--python-version=3.11"), @r###"
+        .arg("--python-version=3.11"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -10440,7 +10478,8 @@ requires-python = ">=3.13"
       × No solution found when resolving dependencies:
       ╰─▶ Because the current Python version (3.12.[X]) does not satisfy Python>=3.13 and example==0.0.0 depends on Python>=3.13, we can conclude that example==0.0.0 cannot be used.
           And because only example==0.0.0 is available and you require example, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -10579,7 +10618,7 @@ fn not_found_direct_url() -> Result<()> {
     requirements_in.write_str("iniconfig @ https://files.pythonhosted.org/packages/ef/a6/fake/iniconfig-2.0.0-py3-none-any.whl")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-            .arg("requirements.in"), @r###"
+            .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -10588,7 +10627,8 @@ fn not_found_direct_url() -> Result<()> {
       × Failed to download `iniconfig @ https://files.pythonhosted.org/packages/ef/a6/fake/iniconfig-2.0.0-py3-none-any.whl`
       ├─▶ Failed to fetch: `https://files.pythonhosted.org/packages/ef/a6/fake/iniconfig-2.0.0-py3-none-any.whl`
       ╰─▶ HTTP status client error (404 Not Found) for url (https://files.pythonhosted.org/packages/ef/a6/fake/iniconfig-2.0.0-py3-none-any.whl)
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -10619,7 +10659,7 @@ requires-python = ">=3.13"
     requirements_in.write_str(&format!("example @ {}", editable_dir.path().display()))?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-        .arg("requirements.in"), @r###"
+        .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -10628,7 +10668,8 @@ requires-python = ">=3.13"
       × No solution found when resolving dependencies:
       ╰─▶ Because the current Python version (3.12.[X]) does not satisfy Python>=3.13 and example==0.0.0 depends on Python>=3.13, we can conclude that example==0.0.0 cannot be used.
           And because only example==0.0.0 is available and you require example, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -10707,14 +10748,15 @@ fn requirement_wheel_name_mismatch() -> Result<()> {
     requirements_in.write_str("dateutil @ https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-        .arg("requirements.in"), @r###"
+        .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Requested package name `dateutil` does not match `python-dateutil` in the distribution filename: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -11740,7 +11782,7 @@ requires-python = ">3.8"
     uv_snapshot!(context.filters(), context.pip_compile()
         .arg("requirements.in")
         .arg("--override")
-        .arg("overrides.txt"), @r###"
+        .arg("overrides.txt"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -11750,7 +11792,8 @@ requires-python = ">3.8"
       ╰─▶ Because there is no version of anyio==0.0.0 and lib==0.0.0 depends on anyio==0.0.0, we can conclude that lib==0.0.0 cannot be used.
           And because only lib==0.0.0 is available and example==0.0.0 depends on lib, we can conclude that example==0.0.0 cannot be used.
           And because only example==0.0.0 is available and you require example, we can conclude that your requirements are unsatisfiable.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     // Now constrain `anyio` to the local version.
@@ -11913,7 +11956,7 @@ fn compile_index_url_first_match_base() -> Result<()> {
         .arg("--extra-index-url")
         .arg("https://astral-sh.github.io/pytorch-mirror/whl/cpu")
         .arg("requirements.in")
-        .arg("--no-deps"), @r###"
+        .arg("--no-deps"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -11923,7 +11966,8 @@ fn compile_index_url_first_match_base() -> Result<()> {
       ╰─▶ Because there is no version of jinja2==3.1.0 and you require jinja2==3.1.0, we can conclude that your requirements are unsatisfiable.
 
           hint: `jinja2` was found on https://astral-sh.github.io/pytorch-mirror/whl/cpu, but not at the requested version (jinja2==3.1.0). A compatible version may be available on a subsequent index (e.g., https://pypi.org/simple). By default, uv will only consider versions that are published on the first index that contains a given package, to avoid dependency confusion attacks. If all indexes are equally trusted, use `--index-strategy unsafe-best-match` to consider all versions from all indexes, regardless of the order in which they were defined.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -11947,7 +11991,7 @@ fn compile_index_url_first_match_marker() -> Result<()> {
         .arg("--extra-index-url")
         .arg("https://astral-sh.github.io/pytorch-mirror/whl/cpu")
         .arg("requirements.in")
-        .arg("--no-deps"), @r###"
+        .arg("--no-deps"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -11957,7 +12001,8 @@ fn compile_index_url_first_match_marker() -> Result<()> {
       ╰─▶ Because there is no version of jinja2{sys_platform == 'linux'}==3.1.0 and you require jinja2{sys_platform == 'linux'}==3.1.0, we can conclude that your requirements are unsatisfiable.
 
           hint: `jinja2` was found on https://astral-sh.github.io/pytorch-mirror/whl/cpu, but not at the requested version (jinja2==3.1.0). A compatible version may be available on a subsequent index (e.g., https://pypi.org/simple). By default, uv will only consider versions that are published on the first index that contains a given package, to avoid dependency confusion attacks. If all indexes are equally trusted, use `--index-strategy unsafe-best-match` to consider all versions from all indexes, regardless of the order in which they were defined.
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -12328,7 +12373,7 @@ fn no_version_for_direct_dependency() -> Result<()> {
     uv_snapshot!(context.filters(), context.pip_compile()
         .arg("requirements.in")
         // Must error before we make any network requests
-        .arg("--offline"), @r###"
+        .arg("--offline"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -12336,7 +12381,8 @@ fn no_version_for_direct_dependency() -> Result<()> {
     ----- stderr -----
       × No solution found when resolving dependencies:
       ╰─▶ you require pypyp ∅
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -12659,7 +12705,7 @@ fn git_source_missing_tag() -> Result<()> {
     "#})?;
 
     uv_snapshot!(filters, context.pip_compile()
-        .arg("pyproject.toml"), @r###"
+        .arg("pyproject.toml"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -12672,7 +12718,9 @@ fn git_source_missing_tag() -> Result<()> {
       ╰─▶ process didn't exit successfully: `git fetch --force --update-head-ok 'https://github.com/astral-test/uv-public-pypackage' '+refs/tags/missing:refs/remotes/origin/tags/missing'` (exit status: 128)
           --- stderr
           fatal: couldn't find remote ref refs/tags/missing
-    "###);
+
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -12853,7 +12901,7 @@ fn invalid_tool_uv_sources() -> Result<()> {
     "#})?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-        .arg(context.temp_dir.join("pyproject.toml")), @r###"
+        .arg(context.temp_dir.join("pyproject.toml")), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -12863,7 +12911,8 @@ fn invalid_tool_uv_sources() -> Result<()> {
       Caused by: Expected direct URL (`https://files.pythonhosted.org/packages/a2/73/a68704750a7679d0b6d3ad7aa8d4da8e14e151ae82e6fee774e6e0d05ec8/urllib3-2.2.1-py3-none-any.tar.baz`) to end in a supported file extension: `.whl`, `.tar.gz`, `.zip`, `.tar.bz2`, `.tar.lz`, `.tar.lzma`, `.tar.xz`, `.tar.zst`, `.tar`, `.tbz`, `.tgz`, `.tlz`, or `.txz`
     urllib3 @ https://files.pythonhosted.org/packages/a2/73/a68704750a7679d0b6d3ad7aa8d4da8e14e151ae82e6fee774e6e0d05ec8/urllib3-2.2.1-py3-none-any.tar.baz
               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     // Write an invalid extension on a source.
@@ -12881,7 +12930,7 @@ fn invalid_tool_uv_sources() -> Result<()> {
     "#})?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-        .arg(context.temp_dir.join("pyproject.toml")), @r###"
+        .arg(context.temp_dir.join("pyproject.toml")), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -12889,7 +12938,8 @@ fn invalid_tool_uv_sources() -> Result<()> {
     ----- stderr -----
     error: Failed to parse entry: `urllib3`
       Caused by: Expected direct URL (`https://files.pythonhosted.org/packages/a2/73/a68704750a7679d0b6d3ad7aa8d4da8e14e151ae82e6fee774e6e0d05ec8/urllib3-2.2.1-py3-none-any.tar.baz`) to end in a supported file extension: `.whl`, `.tar.gz`, `.zip`, `.tar.bz2`, `.tar.lz`, `.tar.lzma`, `.tar.xz`, `.tar.zst`, `.tar`, `.tbz`, `.tgz`, `.tlz`, or `.txz`
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())
@@ -13139,7 +13189,7 @@ fn invalid_extra() -> Result<()> {
     requirements_in.write_str(".[_anyio]")?;
 
     uv_snapshot!(context.filters(), context.pip_compile()
-        .arg("requirements.in"), @r###"
+        .arg("requirements.in"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -13149,7 +13199,8 @@ fn invalid_extra() -> Result<()> {
       Caused by: Expected an alphanumeric character starting the extra name, found `_`
     .[_anyio]
       ^
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     // Sync the `anyio` extra. We should reject it.
     let requirements_in = context.temp_dir.child("requirements.in");
@@ -13282,7 +13333,7 @@ fn compile_enumerate_no_versions() -> Result<()> {
 
     uv_snapshot!(context.filters(), context.pip_compile()
         .arg("requirements.in"),
-    @r###"
+    @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -13291,7 +13342,8 @@ fn compile_enumerate_no_versions() -> Result<()> {
       × No solution found when resolving dependencies:
       ╰─▶ Because the current Python version (3.10.[X]) does not satisfy Python>=3.11,<4.0 and rooster-blue<=0.0.8 depends on Python>=3.11,<4.0, we can conclude that rooster-blue<=0.0.8 cannot be used.
           And because you require rooster-blue, we can conclude that your requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -13730,7 +13782,7 @@ fn unsupported_requires_python_dynamic_metadata() -> Result<()> {
     uv_snapshot!(context.filters(), context
         .pip_compile()
         .arg("--universal")
-        .arg("requirements.in"), @r###"
+        .arg("requirements.in"), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -13740,7 +13792,8 @@ fn unsupported_requires_python_dynamic_metadata() -> Result<()> {
       ╰─▶ Because source-distribution==0.0.3 requires Python >=3.10 and you require source-distribution{python_full_version >= '3.10'}==0.0.3, we can conclude that your requirements are unsatisfiable.
 
           hint: The source distribution for `source-distribution` (v0.0.3) does not include static metadata. Generating metadata for this package requires Python >=3.10, but Python 3.8.[X] is installed.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -14001,7 +14054,7 @@ fn compile_derivation_chain() -> Result<()> {
         ])
         .collect::<Vec<_>>();
 
-    uv_snapshot!(filters, context.pip_compile().arg("pyproject.toml"), @r###"
+    uv_snapshot!(filters, context.pip_compile().arg("pyproject.toml"), @r#"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -14031,7 +14084,8 @@ fn compile_derivation_chain() -> Result<()> {
 
           hint: This usually indicates a problem with the package or the build environment.
       help: `wsgiref` (v0.1.2) was included because `child` (v0.1.0) depends on `wsgiref`
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "#
     );
 
     Ok(())
@@ -14162,7 +14216,7 @@ fn universal_conflicting_override_urls() -> Result<()> {
             .arg("requirements.in")
             .arg("--overrides")
             .arg("overrides.txt")
-            .arg("--universal"), @r###"
+            .arg("--universal"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -14171,7 +14225,8 @@ fn universal_conflicting_override_urls() -> Result<()> {
     error: Requirements contain conflicting URLs for package `sniffio` in split `sys_platform == 'win32'`:
     - https://files.pythonhosted.org/packages/c3/a0/5dba8ed157b0136607c7f2151db695885606968d1fae123dc3391e0cfdbf/sniffio-1.3.0-py3-none-any.whl
     - https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl
-    "###
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/pip_compile.log for detailed logs
+    "
     );
 
     Ok(())

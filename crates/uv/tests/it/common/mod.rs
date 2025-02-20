@@ -117,9 +117,9 @@ impl TestContext {
     /// if creation of the virtual environment should be deferred.
     #[track_caller]
     pub fn new(python_version: &str) -> Self {
+        // making the test context mutable to add the log_env_value if there is decision to manually add log arg to all tests this would be necessary
         let mut new = Self::new_with_versions(&[python_version]);
-        let log_env_value = Location::caller().to_string().replace("/", "_");
-        new.extra_env.push((EnvVars::UV_LOG.into(), log_env_value.into()));
+        new.extra_env.push((EnvVars::UV_LOG.into(), Location::caller().to_string().rsplit('/').next().unwrap().into()));
         new.create_venv();
         new
     }
@@ -298,6 +298,7 @@ impl TestContext {
     /// can be used to create a virtual environment with [`TestContext::create_venv`].
     ///
     /// See [`TestContext::new`] if only a single version is desired.
+    #[track_caller]
     pub fn new_with_versions(python_versions: &[&str]) -> Self {
         let bucket = Self::test_bucket_dir();
         fs_err::create_dir_all(&bucket).expect("Failed to create test bucket");
@@ -499,7 +500,7 @@ impl TestContext {
             python_version,
             python_versions,
             filters,
-            extra_env: vec![],
+            extra_env: vec![(EnvVars::UV_LOG.into(), Location::caller().to_string().rsplit('/').next().unwrap().into())],
             _root: root,
         }
     }
@@ -1447,6 +1448,16 @@ pub async fn download_to_disk(url: &str, path: &Path) {
     }
     file.sync_all().await.unwrap();
 }
+
+fn make_filter(path: &Path, replacement: &str) -> (String, String) {
+    let canon = path
+        .canonicalize()
+        .unwrap_or_else(|_| path.to_owned())
+        .to_string_lossy()
+        .replace('\\', "/");
+    (regex::escape(&canon), replacement.to_string())
+}
+
 
 /// Utility macro to return the name of the current function.
 ///

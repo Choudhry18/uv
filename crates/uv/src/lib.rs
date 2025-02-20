@@ -6,6 +6,7 @@ use std::path::Path;
 use std::process::ExitCode;
 use std::str::FromStr;
 use std::sync::atomic::Ordering;
+use std::env;
 
 use anstream::eprintln;
 use anyhow::{bail, Context, Result};
@@ -1940,15 +1941,16 @@ where
         .join()
         .expect("Tokio executor failed, was there a panic?");
 
+        // Decision to make: Should the log path be printed out if the error was related to the creation of the log file?
+        // Should it say for detailed logs if err logs were more verbose than file logs?
+        // Exit with failure, error or panic prompts the user to check the log file for more information.
         match result {
             Ok(code) => {
-                // if let (ExitStatus::Error | ExitStatus::Failure) = code {
-                //     if let Some(log_path) = log_path {
-                //         let mut log_file_path = log_path.clone();
-                //         log_file_path.set_extension("log");
-                //         eprintln!("See {} for detailed logs", log_file_path.display());
-                //     }
-                // }
+                if let ExitStatus::Error | ExitStatus::Failure = code {
+                    if let Some(log_path) = log_path {
+                        print_log_info(&log_path);
+                    }
+                }
                 code.into()
             }
             Err(err) => {
@@ -1961,12 +1963,28 @@ where
                 for cause in causes {
                     eprintln!("  {}: {}", "Caused by".red().bold(), cause.to_string().trim());
                 }
-                // if let Some(log_path) = log_path {
-                //     let mut log_file_path = log_path.clone();
-                //     log_file_path.set_extension("log");
-                //     eprintln!("See {} for detailed logs", log_file_path.display());
-                // }
+                if let Some(log_path) = log_path {
+                    print_log_info(&log_path);
+                }
                 ExitStatus::Error.into()
             }
         }
+}
+
+fn print_log_info(log_path: &Path) {
+    let mut log_file_path = log_path.to_owned();
+    log_file_path.set_extension("log");
+    let log_file_path = env::var(uv_static::EnvVars::UV_LOG_DIR)
+        .map(|dir| Path::new(&dir).join(
+            log_file_path.file_name().expect("Missing filename")
+        ))
+        .unwrap_or_else(|_| {
+            env::current_dir()
+                .expect("Failed to get current directory when directing to logs")
+                .join(&log_file_path)
+        });
+    eprintln!(
+        "See {} for detailed logs",
+        log_file_path.display().to_string().cyan().bold()
+    );
 }

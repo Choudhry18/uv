@@ -1,8 +1,7 @@
 use anyhow::Result;
 use assert_cmd::prelude::*;
 use assert_fs::prelude::*;
-use std::fs;
-use crate::{common::{uv_snapshot, TestContext}, function_name};
+use crate::common::{uv_snapshot, TestContext};
 
 /// `cache clean` should remove all packages.
 #[test]

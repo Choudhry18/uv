@@ -94,28 +94,30 @@ fn tool_run_at_version() {
         .arg("pytest@")
         .arg("--version")
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Not a valid package or extra name: "pytest@". Names must start and end with a letter or digit and may only contain -, _, ., and alphanumeric characters.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    "#);
 
     // Invalid versions are just treated as package and command names
     uv_snapshot!(context.filters(), context.tool_run()
         .arg("pytest@invalid")
         .arg("--version")
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Not a valid package or extra name: "pytest@invalid". Names must start and end with a letter or digit and may only contain -, _, ., and alphanumeric characters.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    "#);
 
     let filters = context
         .filters()
@@ -134,7 +136,7 @@ fn tool_run_at_version() {
         .arg("pytest@8.0.0")
         .arg("--version")
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -153,7 +155,8 @@ fn tool_run_at_version() {
      + pluggy==1.4.0
      + pytest==8.1.1
     warning: An executable named `pytest@8.0.0` is not provided by package `pytest`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
 
 #[test]
@@ -196,7 +199,7 @@ fn tool_run_suggest_valid_commands() {
     .arg("black")
     .arg("orange")
     .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-    .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+    .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -217,12 +220,13 @@ fn tool_run_suggest_valid_commands() {
      + pathspec==0.12.1
      + platformdirs==4.2.0
     warning: An executable named `orange` is not provided by package `black`.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 
     uv_snapshot!(context.filters(), context.tool_run()
     .arg("fastapi-cli")
     .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-    .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+    .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -236,7 +240,8 @@ fn tool_run_suggest_valid_commands() {
      + importlib-metadata==1.7.0
      + zipp==3.18.1
     warning: Package `fastapi-cli` does not provide any executables.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
 
 #[test]
@@ -751,7 +756,7 @@ fn tool_run_list_installed() {
     // No tools installed.
     uv_snapshot!(context.filters(), context.tool_run()
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -760,7 +765,8 @@ fn tool_run_list_installed() {
     See `uv tool run --help` for more information.
 
     ----- stderr -----
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 
     // Install `black`.
     context
@@ -774,7 +780,7 @@ fn tool_run_list_installed() {
     // List installed tools.
     uv_snapshot!(context.filters(), context.tool_run()
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -787,7 +793,8 @@ fn tool_run_list_installed() {
     See `uv tool run --help` for more information.
 
     ----- stderr -----
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
 
 /// By default, omit resolver and installer output.
@@ -1216,7 +1223,7 @@ fn tool_run_with_editable() -> anyhow::Result<()> {
         .arg("flask")
         .arg("--version")
         .env(EnvVars::UV_TOOL_DIR, tool_dir
-        .as_os_str()).env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .as_os_str()).env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1224,7 +1231,8 @@ fn tool_run_with_editable() -> anyhow::Result<()> {
     ----- stderr -----
       × Failed to resolve `--with` requirement
       ╰─▶ Distribution not found at: file://[TEMP_DIR]/foo
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 
     Ok(())
 }
@@ -1238,7 +1246,7 @@ fn warn_no_executables_found() {
     uv_snapshot!(context.filters(), context.tool_run()
         .arg("requests")
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1254,7 +1262,8 @@ fn warn_no_executables_found() {
      + requests==2.31.0
      + urllib3==2.2.1
     warning: Package `requests` does not provide any executables.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
 
 /// Warn when a user passes `--upgrade` to `uv tool run`.
@@ -1322,7 +1331,7 @@ fn tool_run_resolution_error() {
     uv_snapshot!(context.filters(), context.tool_run()
         .arg("add")
         .env(EnvVars::UV_TOOL_DIR, tool_dir.as_os_str())
-        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r###"
+        .env(EnvVars::XDG_BIN_HOME, bin_dir.as_os_str()), @r"
     success: false
     exit_code: 1
     ----- stdout -----
@@ -1330,7 +1339,8 @@ fn tool_run_resolution_error() {
     ----- stderr -----
       × No solution found when resolving tool dependencies:
       ╰─▶ Because there are no versions of add and you require add, we can conclude that your requirements are unsatisfiable.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
 
 #[test]
@@ -1492,48 +1502,52 @@ fn tool_run_python_at_version() {
         .arg("-p")
         .arg("3.12")
         .arg("python@3.11")
-        .arg("--version"), @r###"
+        .arg("--version"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Received multiple Python version requests: `3.12` and `3.11`
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 
     // Request a version that does not exist
     uv_snapshot!(context.filters(), context.tool_run()
-        .arg("python@3.12.99"), @r###"
+        .arg("python@3.12.99"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: No interpreter found for Python 3.12.[X] in [PYTHON SOURCES]
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 
     // Request an invalid version
     uv_snapshot!(context.filters(), context.tool_run()
-        .arg("python@3.300"), @r###"
+        .arg("python@3.300"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
-    
+
     ----- stderr -----
     error: Invalid version request: 3.300
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 
     // Request `@latest` (not yet supported)
     uv_snapshot!(context.filters(), context.tool_run()
         .arg("python@latest")
-        .arg("--version"), @r###"
+        .arg("--version"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Requesting the 'latest' Python version is not yet supported
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
 
 #[test]
@@ -1576,12 +1590,13 @@ fn tool_run_python_from() {
         .arg("--from")
         .arg("python>=3.12")
         .arg("python")
-        .arg("--version"), @r###"
+        .arg("--version"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
     error: Using `--from python<specifier>` is not supported. Use `python@<version>` instead.
-    "###);
+    See [WORKSPACE]/crates/uv/tests/it/testLogs/tool_run.log for detailed logs
+    ");
 }
